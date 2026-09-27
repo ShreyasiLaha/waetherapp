@@ -11,51 +11,53 @@
 | Local env verified for all members | | Not Started | |
 | Module owners assigned | | Not Started | |
 
-## Phase 1 — Data & Regridding
+## Phase 1 — Data Procurement & Regridding
 | Task | Owner | Status | Notes |
 |---|---|---|---|
-| ERA5 truth downloaded (bounding box + vars) | | Not Started | |
-| GFS (NWP) data downloaded | | Not Started | |
-| AI-model reforecast downloaded | | Not Started | |
-| Regridding script (conservative remap) | | Not Started | |
-| Dimension alignment validated | | Not Started | |
+| ERA5 truth downloaded (tp, t2m, ws10) | | Not Started | |
+| GFS (NWP proxy) data downloaded | | Not Started | |
+| AI-model reforecast downloaded (GraphCast/Pangu) | | Not Started | |
+| Conservative regridding script (0.25° common grid) | | Not Started | |
+| Dimension & coordinate alignment validated | | Not Started | (lat, lon, time/lead_time) |
 
-## Phase 2 — ML Blending Model
+## Phase 2 — ML Blending Models
 | Task | Owner | Status | Notes |
 |---|---|---|---|
-| features.parquet built | | Not Started | |
-| Baseline blending model trained | | Not Started | |
-| Extreme-preserving loss implemented | | Not Started | |
-| Batch inference → blended + weights .nc | | Not Started | |
-| Skill scores computed (RMSE/ACC) | | Not Started | |
-| **Blended RMSE beats all individual models?** | | Not Started | Blocking exit criterion |
+| `features.parquet` built across lead times (24h–120h) | | Not Started | |
+| Baseline blending models trained (tp, t2m, ws10) | | Not Started | |
+| Extreme-preserving loss implemented (quantile/weighted) | | Not Started | Non-negotiable |
+| Batch inference → `blended_*.nc` + `weights_*.nc` | | Not Started | |
+| Skill scores computed across lead times (RMSE/ACC) | | Not Started | |
+| **Blended RMSE beats all individual models?** | | Not Started | **Blocking exit criterion** |
 
-## Phase 3 — Backend/Serving
+## Phase 3 — Operational Automation & Backend
 | Task | Owner | Status | Notes |
 |---|---|---|---|
-| Data-loading / API functions built | | Not Started | |
-| `/simulate-dropout` fallback logic | | Not Started | |
-| Endpoint/function contract matches Schema.md §6 | | Not Started | |
+| Operational routine script (`scripts/run_operational_blend.py`) | | Not Started | Core operational deliverable |
+| IMD extreme hazard detection logic (Rain, Heat, Wind) | | Not Started | |
+| Data-loading / API endpoints built | | Not Started | Matches Schema.md §6 |
+| Fallback / model-dropout re-normalization logic | | Not Started | Zero-crash verification |
 
-## Phase 4 — Dashboard/Frontend
+## Phase 4 — Command Center Dashboard
 | Task | Owner | Status | Notes |
 |---|---|---|---|
-| Overview screen | | Not Started | |
-| Main map screen (blended forecast) | | Not Started | |
-| Weight-distribution overlay/toggle | | Not Started | |
-| Skill score sidebar/chart | | Not Started | |
-| Explainability panel (click-to-inspect) | | Not Started | |
-| Fallback/stress-test toggle UI | | Not Started | |
-| Extreme-event visual marker | | Not Started | |
+| Overview screen & Top context bar (Date, Lead Time, Variable) | | Not Started | |
+| Main map: Blended forecast view | | Not Started | |
+| Model weight distribution overlay & legend | | Not Started | Categorical color palette |
+| IMD Extreme Weather Guidance alert cards | | Not Started | Rain >=64.5mm, Heat, Wind |
+| Skill score sidebar (RMSE & ACC delta vs models) | | Not Started | |
+| Cell explainability inspector drawer | | Not Started | |
+| Operational resilience / dropout toggle UI | | Not Started | |
 
 ## Phase 5 — Stress-Test Prep & Deployment
 | Task | Owner | Status | Notes |
 |---|---|---|---|
-| Judge Q&A rehearsed against live demo | | Not Started | |
-| Fallback demo tested (no-crash, multiple runs) | | Not Started | |
-| Monsoon/cyclone walkthrough prepared | | Not Started | |
+| Judge Q&A rehearsed against live demo (MoES/NCMRWF focus) | | Not Started | |
+| Fallback demo tested live (no-crash, seamless weight shift) | | Not Started | |
+| Severe event case-study prepared (cyclone/monsoon depression) | | Not Started | Proof of non-smoothing |
+| Operational batch script execution verified | | Not Started | `python scripts/run_operational_blend.py` |
 | Deployed to free hosting | | Not Started | |
-| Live dashboard numbers match skill_scores.json | | Not Started | |
+| Live dashboard numbers match `skill_scores.json` | | Not Started | |
 
 ## Blockers Log
 | Date/Time | Blocker | Raised by | Resolution |
