@@ -69,7 +69,7 @@ if DASHBOARD_DIR.exists():
 
 @app.get("/", include_in_schema=False)
 def root():
-    return RedirectResponse(url="/dashboard/")
+    return RedirectResponse(url="/dashboard/landing.html")
 
 
 
