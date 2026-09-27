@@ -62,7 +62,8 @@
 ## Blockers Log
 | Date/Time | Blocker | Raised by | Resolution |
 |---|---|---|---|
-| | | | |
+| 2026-09-27 17:00 | Commit `1c9430f` accidentally deleted non-doc files from git repository when files were staged outside `Brain/`. | System / User | Reverted via commit `2e51114`, restoring all 217 files across `data`, `models`, `scripts`, `src`, `dashboard`. Pushed to GitHub `origin/main`. Synchronized with parent `RituGrid/`. Zero logic or data lost. |
+
 
 ## Decisions Log
 > Record any deviation from PRD/TRD/Schema here so the coding tool and team stay in sync.
