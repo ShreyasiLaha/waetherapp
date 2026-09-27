@@ -1,0 +1,20 @@
+# RituGrid — Hybrid AI-NWP Multi-Model Forecast Blending System
+# Core Python Environment Dependencies (Python 3.10+)
+
+# Multidimensional Array & Geospatial Processing
+numpy>=1.24.0
+pandas>=2.0.0
+xarray>=2023.1.0
+netCDF4>=1.6.0
+dask>=2023.1.0
+
+# Machine Learning & Blending Engine
+scikit-learn>=1.2.0
+
+# Operational REST API & Serving Layer
+fastapi>=0.100.0
+uvicorn[standard]>=0.22.0
+
+# Data Procurement & External Access
+cdsapi>=0.6.0
+requests>=2.28.0

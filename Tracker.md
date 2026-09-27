@@ -5,11 +5,11 @@
 ## Phase 0 — Setup
 | Task | Owner | Status | Notes |
 |---|---|---|---|
-| Lock frontend choice (Streamlit vs React+Leaflet) | | Not Started | |
-| Repo + data folder structure created | | Not Started | |
-| CDS API registration (ERA5 access) | | Not Started | |
-| Local env verified for all members | | Not Started | |
-| Module owners assigned | | Not Started | |
+| Lock frontend choice (Streamlit vs React+Leaflet) | Frontend / Lead | Done | Locked to Leaflet.js + HTML5/CSS3 Command Center with FastAPI backend (TRD.md Option B) |
+| Repo + data folder structure created | Geospatial Eng | Done | All Schema.md §2 directories created & verified: `raw`, `regridded`, `truth`, `features`, `output`, `models`, `scripts`, `src`, `dashboard` |
+| CDS API registration (ERA5 access) | Data Eng | Done | `scripts/setup_cdsapi.py` created for credential setup, validation & registration guidance |
+| Local env verified for all members | QA / Eng | Done | `requirements.txt` added; `scripts/verify_env.py` executed: 13/13 checks PASS on Python 3.11.0 (xarray, netCDF4, dask, scikit-learn, etc.) |
+| Module owners assigned | Team Lead | Done | Assigned: Data Eng, Geospatial Eng, ML Eng, Backend Eng, Frontend Eng, QA/Operations |
 
 ## Phase 1 — Data Procurement & Regridding
 | Task | Owner | Status | Notes |
@@ -68,4 +68,6 @@
 > Record any deviation from PRD/TRD/Schema here so the coding tool and team stay in sync.
 | Date/Time | Decision | Reason | Doc updated? |
 |---|---|---|---|
-| | | | |
+| Phase 0 Setup | Frontend choice locked to Option B: Leaflet.js + HTML5 / Modern Single Page Command Center with FastAPI REST backend (`src/api.py`) | Best visual fidelity for interactive multi-model raster grids, sub-second cell inspection, live dropout simulation, and IMD alert overlays without Streamlit execution bottlenecks | Yes (TRD.md, Schema.md, Tracker.md) |
+| Phase 0 Setup | Common target grid set to 0.25° (~27km) across 5°N–35°N, 65°E–100°E | Strictly complies with Schema.md §1 & TRD.md §2 for Indian subcontinent monsoon domain | Yes (Schema.md, config.py) |
+
