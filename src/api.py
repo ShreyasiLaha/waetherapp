@@ -31,6 +31,8 @@ import xarray as xr
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
 # Bootstrap sys.path for src imports when run as module
@@ -38,7 +40,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.config import (
-    OUTPUT_DIR, MODELS_DIR, REGRIDDED_DATA_DIR, TRUTH_DATA_DIR,
+    PROJECT_ROOT, OUTPUT_DIR, MODELS_DIR, REGRIDDED_DATA_DIR, TRUTH_DATA_DIR,
     SOURCE_MODELS, VARIABLES, TARGET_LATS, TARGET_LONS, LEAD_TIMES,
 )
 from src.blending_model import FEATURE_COLS, fill_missing_models
@@ -59,6 +61,16 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+
+# Mount static dashboard UI
+DASHBOARD_DIR = PROJECT_ROOT / "dashboard"
+if DASHBOARD_DIR.exists():
+    app.mount("/dashboard", StaticFiles(directory=str(DASHBOARD_DIR), html=True), name="dashboard")
+
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse(url="/dashboard/")
+
 
 
 # ─── Internal Helpers ─────────────────────────────────────────────────────────

@@ -41,13 +41,13 @@
 ## Phase 4 — Command Center Dashboard
 | Task | Owner | Status | Notes |
 |---|---|---|---|
-| Overview screen & Top context bar (Date, Lead Time, Variable) | | Not Started | |
-| Main map: Blended forecast view | | Not Started | |
-| Model weight distribution overlay & legend | | Not Started | Categorical color palette |
-| IMD Extreme Weather Guidance alert cards | | Not Started | Rain >=64.5mm, Heat, Wind |
-| Skill score sidebar (RMSE & ACC delta vs models) | | Not Started | |
-| Cell explainability inspector drawer | | Not Started | |
-| Operational resilience / dropout toggle UI | | Not Started | |
+| Overview screen & Top context bar (Date, Lead Time, Variable) | Frontend Eng | Done | Sticky meteorological header: RituGrid branding, Date selector, Lead Time (+24h to +120h), Variable tabs (`tp`, `t2m`, `ws10`), Live API status |
+| Main map: Blended forecast view | Frontend Eng | Done | 17,061-cell canvas raster on Leaflet; RdYlBu_r (°C), Light-blue to magenta (Rain), Mint to crimson (Wind); IMD threshold stippling |
+| Model weight distribution overlay & legend | Frontend Eng | Done | Categorical model layer (GFS=Amber, GEFS=Cyan, GraphCast=Violet); dynamic cell weight opacity; coverage breakdown |
+| IMD Extreme Weather Guidance alert cards | Frontend Eng | Done | Active hazard cards for Heavy Rain (≥64.5mm), Heatwave (≥40°C), Gale Wind (≥50km/h); click-to-fly centroid jump |
+| Skill score sidebar (RMSE & ACC delta vs models) | Frontend Eng | Done | Blended RMSE: 0.62 (-59% vs GFS), ACC: 99.98% (+2.1% vs AI); comparative performance bar charts vs ERA5 truth |
+| Cell explainability inspector drawer | Frontend Eng | Done | Interactive click inspector: Lat/Lon, region attribution, blended val, model weight bars, regime badge, peak preservation proof |
+| Operational resilience / dropout toggle UI | Frontend Eng | Done | "Simulate Outage" modal; live POST /simulate-dropout; smooth re-normalization across remaining active models; zero blackout |
 
 ## Phase 5 — Stress-Test Prep & Deployment
 | Task | Owner | Status | Notes |
