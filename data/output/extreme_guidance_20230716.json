@@ -1,0 +1,109 @@
+{
+  "date": "20230716",
+  "alerts": [
+    {
+      "type": "heavy_rainfall",
+      "variable": "tp",
+      "lead_time_hours": 24,
+      "threshold": ">= 64.5 mm/day",
+      "max_value": 127.36,
+      "max_value_unit": "mm/day",
+      "region": "Indian Subcontinent",
+      "centroid_lat": 20.3,
+      "centroid_lon": 81.7,
+      "affected_cells": 460,
+      "dominant_model_used": "model_nwp2"
+    },
+    {
+      "type": "heavy_rainfall",
+      "variable": "tp",
+      "lead_time_hours": 48,
+      "threshold": ">= 64.5 mm/day",
+      "max_value": 127.63,
+      "max_value_unit": "mm/day",
+      "region": "Indian Subcontinent",
+      "centroid_lat": 20.17,
+      "centroid_lon": 81.49,
+      "affected_cells": 442,
+      "dominant_model_used": "model_nwp2"
+    },
+    {
+      "type": "heavy_rainfall",
+      "variable": "tp",
+      "lead_time_hours": 72,
+      "threshold": ">= 64.5 mm/day",
+      "max_value": 127.76,
+      "max_value_unit": "mm/day",
+      "region": "Indian Subcontinent",
+      "centroid_lat": 20.1,
+      "centroid_lon": 81.33,
+      "affected_cells": 425,
+      "dominant_model_used": "model_nwp2"
+    },
+    {
+      "type": "heavy_rainfall",
+      "variable": "tp",
+      "lead_time_hours": 120,
+      "threshold": ">= 64.5 mm/day",
+      "max_value": 127.53,
+      "max_value_unit": "mm/day",
+      "region": "Indian Subcontinent",
+      "centroid_lat": 20.22,
+      "centroid_lon": 81.58,
+      "affected_cells": 444,
+      "dominant_model_used": "model_nwp2"
+    },
+    {
+      "type": "high_wind",
+      "variable": "ws10",
+      "lead_time_hours": 24,
+      "threshold": ">= 50.0 km/h (13.89 m/s)",
+      "max_value": 71.86,
+      "max_value_unit": "km/h",
+      "region": "Kerala & Lakshadweep",
+      "centroid_lat": 15.25,
+      "centroid_lon": 74.23,
+      "affected_cells": 639,
+      "dominant_model_used": "model_nwp2"
+    },
+    {
+      "type": "high_wind",
+      "variable": "ws10",
+      "lead_time_hours": 48,
+      "threshold": ">= 50.0 km/h (13.89 m/s)",
+      "max_value": 71.83,
+      "max_value_unit": "km/h",
+      "region": "Kerala & Lakshadweep",
+      "centroid_lat": 15.28,
+      "centroid_lon": 74.41,
+      "affected_cells": 669,
+      "dominant_model_used": "model_nwp2"
+    },
+    {
+      "type": "high_wind",
+      "variable": "ws10",
+      "lead_time_hours": 72,
+      "threshold": ">= 50.0 km/h (13.89 m/s)",
+      "max_value": 71.85,
+      "max_value_unit": "km/h",
+      "region": "Kerala & Lakshadweep",
+      "centroid_lat": 15.33,
+      "centroid_lon": 74.64,
+      "affected_cells": 713,
+      "dominant_model_used": "model_nwp2"
+    },
+    {
+      "type": "high_wind",
+      "variable": "ws10",
+      "lead_time_hours": 120,
+      "threshold": ">= 50.0 km/h (13.89 m/s)",
+      "max_value": 71.76,
+      "max_value_unit": "km/h",
+      "region": "Kerala & Lakshadweep",
+      "centroid_lat": 15.29,
+      "centroid_lon": 74.45,
+      "affected_cells": 675,
+      "dominant_model_used": "model_nwp2"
+    }
+  ]
+}
