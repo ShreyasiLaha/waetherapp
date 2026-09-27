@@ -1,0 +1,78 @@
+{
+  "date": "20230716",
+  "lead_time_scores": {},
+  "alerts": [
+    {
+      "variable": "tp",
+      "lead_time_hours": 24,
+      "type": "heavy_rainfall",
+      "threshold": ">= 64.5 mm/day",
+      "max_value": 127.36,
+      "affected_cells": 460,
+      "dominant_model_used": "model_nwp2"
+    },
+    {
+      "variable": "tp",
+      "lead_time_hours": 48,
+      "type": "heavy_rainfall",
+      "threshold": ">= 64.5 mm/day",
+      "max_value": 127.63,
+      "affected_cells": 442,
+      "dominant_model_used": "model_nwp2"
+    },
+    {
+      "variable": "tp",
+      "lead_time_hours": 72,
+      "type": "heavy_rainfall",
+      "threshold": ">= 64.5 mm/day",
+      "max_value": 127.76,
+      "affected_cells": 425,
+      "dominant_model_used": "model_nwp2"
+    },
+    {
+      "variable": "tp",
+      "lead_time_hours": 120,
+      "type": "heavy_rainfall",
+      "threshold": ">= 64.5 mm/day",
+      "max_value": 127.53,
+      "affected_cells": 444,
+      "dominant_model_used": "model_nwp2"
+    },
+    {
+      "variable": "ws10",
+      "lead_time_hours": 24,
+      "type": "high_wind",
+      "threshold": ">= 50.0 km/h",
+      "max_value": 19.96,
+      "affected_cells": 639,
+      "dominant_model_used": "model_nwp2"
+    },
+    {
+      "variable": "ws10",
+      "lead_time_hours": 48,
+      "type": "high_wind",
+      "threshold": ">= 50.0 km/h",
+      "max_value": 19.95,
+      "affected_cells": 669,
+      "dominant_model_used": "model_nwp2"
+    },
+    {
+      "variable": "ws10",
+      "lead_time_hours": 72,
+      "type": "high_wind",
+      "threshold": ">= 50.0 km/h",
+      "max_value": 19.96,
+      "affected_cells": 713,
+      "dominant_model_used": "model_nwp2"
+    },
+    {
+      "variable": "ws10",
+      "lead_time_hours": 120,
+      "type": "high_wind",
+      "threshold": ">= 50.0 km/h",
+      "max_value": 19.93,
+      "affected_cells": 675,
+      "dominant_model_used": "model_nwp2"
+    }
+  ]
+}
