@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Map | RituGrid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.85);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --accent: #38bdf8;
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Sidebar Navigation (Shared) */
+    .sidebar {
+      width: 250px;
+      background: rgba(15, 23, 42, 0.95);
+      border-right: 1px solid var(--card-border);
+      backdrop-filter: blur(20px);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    .brand {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 3rem;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 0.5rem;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--accent);
+    }
+
+    /* Map Area */
+    .map-container {
+      flex: 1;
+      position: relative;
+    }
+
+    #weather-map {
+      width: 100%;
+      height: 100%;
+      background: #0f172a;
+    }
+
+    /* Floating Control Panels */
+    .floating-panel {
+      position: absolute;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      z-index: 900; /* Below leaflet controls (1000) but above map layer (400) */
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Top Left: Location & Region Selector */
+    .panel-top-left {
+      top: 2rem;
+      left: 2rem;
+      width: 320px;
+    }
+
+    /* Bottom Left: Layer Selectors */
+    .panel-bottom-left {
+      bottom: 2rem;
+      left: 2rem;
+      width: 320px;
+    }
+
+    /* Top Right: Model Switcher */
+    .panel-top-right {
+      top: 2rem;
+      right: 2rem;
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 2rem;
+    }
+
+    .panel-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin: 0 0 1rem 0;
+      font-weight: 700;
+    }
+
+    /* Form Controls */
+    select.region-select {
+      width: 100%;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--card-border);
+      color: white;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .layer-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .layer-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid transparent;
+      color: var(--text-main);
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      text-align: left;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: all 0.2s;
+    }
+
+    .layer-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .layer-btn.active {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: var(--primary);
+      color: var(--accent);
+    }
+
+    /* Model Switcher Pills */
+    .model-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.5rem 1.25rem;
+      border-radius: 1.5rem;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .model-btn:hover {
+      color: white;
+    }
+
+    .model-btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+    
+    /* Dark mode for Leaflet tiles (invert filter trick) */
+    .leaflet-tile-pane {
+      filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">RituGrid</div>
+    <nav>
+      <a href="landing.html" class="nav-link">🏠 Home</a>
+      <a href="index.html" class="nav-link">📊 Dashboard</a>
+      <a href="map.html" class="nav-link active">🌍 Interactive Map</a>
+      <a href="comparison.html" class="nav-link">🤖 Model Comparison</a>
+      <a href="#" class="nav-link">🚨 Alerts</a>
+    </nav>
+  </aside>
+
+  <!-- Interactive Map Container -->
+  <div class="map-container">
+    <div id="weather-map"></div>
+
+    <!-- Location & Region Selection -->
+    <div class="floating-panel panel-top-left">
+      <h3 class="panel-title">Select Region</h3>
+      <select class="region-select" id="region-dropdown">
+        <option value="india">Indian Subcontinent (Default)</option>
+        <option value="north">North India (Himalayas)</option>
+        <option value="south">South Peninsula</option>
+        <option value="east">East & North-East</option>
+        <option value="west">West Coast & Arabian Sea</option>
+      </select>
+    </div>
+
+    <!-- Visual Layer Toggles -->
+    <div class="floating-panel panel-bottom-left">
+      <h3 class="panel-title">Active Data Layer</h3>
+      <div class="layer-buttons">
+        <button class="layer-btn active" data-layer="rainfall">
+          <span>🌧️</span> Rainfall 
+        </button>
+        <button class="layer-btn" data-layer="temperature">
+          <span>🌡️</span> Temperature
+        </button>
+        <button class="layer-btn" data-layer="wind">
+          <span>💨</span> Wind
+        </button>
+        <button class="layer-btn" data-layer="risk">
+          <span>⚠️</span> Extreme-Weather Risk
+        </button>
+      </div>
+    </div>
+
+    <!-- Forecasting Model Switcher -->
+    <div class="floating-panel panel-top-right">
+      <button class="model-btn" data-model="nwp">NWP</button>
+      <button class="model-btn" data-model="ai">AI</button>
+      <button class="model-btn" data-model="ensemble">Ensemble</button>
+      <button class="model-btn active" data-model="hybrid">Hybrid</button>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <script>
+    // Initialize Map centered on India
+    const map = L.map('weather-map', {
+      center: [22.0, 79.0],
+      zoom: 5,
+      zoomControl: false // Move zoom control if needed
+    });
+
+    // Add base map tiles (standard OSM, but inverted to dark via CSS)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+    }).addTo(map);
+    
+    // Add Zoom Control to bottom right
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    // Interaction Logic for Model Switcher
+    document.querySelectorAll('.model-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        // Future: Fetch new data for the selected model
+      });
+    });
+
+    // Interaction Logic for Layer Switcher
+    document.querySelectorAll('.layer-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.layer-btn').forEach(b => b.classList.remove('active'));
+        const target = e.target.closest('.layer-btn');
+        target.classList.add('active');
+        // Future: Render the corresponding grid array to the map
+      });
+    });
+
+    // Interaction Logic for Region Dropdown
+    document.getElementById('region-dropdown').addEventListener('change', (e) => {
+      const region = e.target.value;
+      if(region === 'india') map.setView([22.0, 79.0], 5);
+      if(region === 'north') map.setView([31.0, 77.0], 6);
+      if(region === 'south') map.setView([12.0, 77.0], 6);
+      if(region === 'east') map.setView([25.0, 88.0], 6);
+      if(region === 'west') map.setView([19.0, 72.0], 6);
+    });
+  </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RituGrid - AI Weather Blending</title>
+  <title>Hybrid AI–NWP Weather Forecasting System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -19,7 +19,7 @@
     body, html {
       margin: 0;
       padding: 0;
-      height: 100%;
+      min-height: 100%;
       font-family: 'Outfit', sans-serif;
       background-color: var(--bg-dark);
       color: var(--text-main);
@@ -27,7 +27,7 @@
     }
 
     .hero-bg {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
@@ -37,7 +37,7 @@
     }
 
     .glow-orb {
-      position: absolute;
+      position: fixed;
       width: 600px;
       height: 600px;
       background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(0,0,0,0) 70%);
@@ -49,7 +49,7 @@
     }
     
     .glow-orb-2 {
-      position: absolute;
+      position: fixed;
       width: 500px;
       height: 500px;
       background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(0,0,0,0) 70%);
@@ -69,7 +69,6 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 2rem;
-      height: 100%;
       display: flex;
       flex-direction: column;
     }
@@ -79,6 +78,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 1rem 0;
+      margin-bottom: 3rem;
     }
 
     .logo {
@@ -97,7 +97,6 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      margin-top: -5vh;
     }
 
     .badge {
@@ -113,11 +112,12 @@
     }
 
     h1 {
-      font-size: 4.5rem;
+      font-size: 4rem;
       font-weight: 800;
       line-height: 1.1;
-      margin: 0 0 1.5rem 0;
+      margin: 0 0 1rem 0;
       letter-spacing: -0.02em;
+      max-width: 900px;
     }
 
     .gradient-text {
@@ -126,12 +126,25 @@
       -webkit-text-fill-color: transparent;
     }
 
-    p.subtitle {
-      font-size: 1.25rem;
+    p.tagline {
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: #e2e8f0;
+      margin: 0 0 1.5rem 0;
+    }
+
+    p.explanation {
+      font-size: 1.125rem;
       color: var(--text-muted);
-      max-width: 600px;
+      max-width: 750px;
       margin: 0 auto 3rem auto;
       line-height: 1.6;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 4rem;
     }
 
     .cta-button {
@@ -156,23 +169,94 @@
       background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
     }
 
-    .cta-button svg {
+    .cta-button-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      text-decoration: none;
+      padding: 1rem 2rem;
+      border-radius: 999px;
+      font-size: 1.125rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .cta-button-secondary:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .cta-button svg, .cta-button-secondary svg {
       width: 20px;
       height: 20px;
       transition: transform 0.3s ease;
     }
     
-    .cta-button:hover svg {
+    .cta-button:hover svg, .cta-button-secondary:hover svg {
       transform: translateX(4px);
     }
 
+    /* Architectural Visual Diagram */
+    .visual-diagram {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 5rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 2rem 3rem;
+      border-radius: 1.5rem;
+      backdrop-filter: blur(10px);
+      flex-wrap: wrap;
+    }
+
+    .diagram-node {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem 1.5rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .diagram-node.highlight {
+      border-color: #38bdf8;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+    }
+
+    .diagram-icon {
+      font-size: 1.5rem;
+    }
+
+    .diagram-arrow {
+      color: #64748b;
+      font-weight: 800;
+      font-size: 1.5rem;
+    }
+
+    .diagram-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* Feature Cards */
     .features {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 2rem;
-      margin-top: 5rem;
       width: 100%;
       max-width: 1000px;
+      margin-bottom: 4rem;
     }
 
     .feature-card {
@@ -182,12 +266,13 @@
       padding: 2rem;
       text-align: left;
       backdrop-filter: blur(10px);
-      transition: transform 0.3s ease, background 0.3s ease;
+      transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease;
     }
 
     .feature-card:hover {
       transform: translateY(-5px);
       background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(56, 189, 248, 0.3);
     }
 
     .feature-icon {
@@ -204,15 +289,18 @@
     }
 
     .feature-desc {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       color: var(--text-muted);
       margin: 0;
       line-height: 1.5;
     }
 
     @media (max-width: 768px) {
-      h1 { font-size: 3rem; }
+      h1 { font-size: 2.5rem; }
       .features { grid-template-columns: 1fr; }
+      .visual-diagram { flex-direction: column; padding: 1.5rem; }
+      .diagram-arrow { transform: rotate(90deg); }
+      .button-group { flex-direction: column; }
     }
   </style>
 </head>
@@ -225,36 +313,76 @@
   <div class="container">
     <header>
       <div class="logo">RituGrid</div>
-      <a href="index.html" style="color: #94a3b8; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">Dashboard</a>
+      <a href="index.html" style="color: #94a3b8; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">Sign In</a>
     </header>
 
     <main>
       <div class="badge">MoES / NCMRWF System</div>
-      <h1 class="gradient-text">Next-Gen Weather Intelligence</h1>
-      <p class="subtitle">A cutting-edge hybrid AI-NWP multi-model blending system delivering unparalleled meteorological accuracy for the Indian subcontinent.</p>
+      <h1 class="gradient-text">Hybrid AI–NWP Weather Forecasting System</h1>
+      <p class="tagline">Next-generation meteorological accuracy through intelligent model consensus.</p>
+      <p class="explanation">Traditional Numerical Weather Prediction (NWP) models often struggle with local nuances and sudden climate anomalies. Our solution bridges this gap by leveraging advanced deep learning to dynamically blend multiple NWP outputs and ensemble models, delivering highly accurate and reliable forecasts for the Indian subcontinent.</p>
       
-      <a href="index.html" class="cta-button">
-        Launch Dashboard
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-        </svg>
-      </a>
+      <div class="button-group">
+        <a href="index.html" class="cta-button">
+          Explore Forecast
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+          </svg>
+        </a>
+        <a href="#features" class="cta-button-secondary">
+          Get Started
+        </a>
+      </div>
 
-      <div class="features">
+      <!-- Conceptual Diagram -->
+      <div class="visual-diagram">
+        <div class="diagram-column">
+          <div class="diagram-node">
+            <span class="diagram-icon">🌦️</span>
+            <span>NWP Models</span>
+          </div>
+          <div class="diagram-node">
+            <span class="diagram-icon">📊</span>
+            <span>Ensemble Data</span>
+          </div>
+        </div>
+        
+        <div class="diagram-arrow">➔</div>
+        
+        <div class="diagram-node highlight">
+          <span class="diagram-icon">🧠</span>
+          <span style="color: #38bdf8;">AI Engine</span>
+        </div>
+        
+        <div class="diagram-arrow">➔</div>
+        
+        <div class="diagram-node" style="background: rgba(59, 130, 246, 0.2); border-color: #3b82f6;">
+          <span class="diagram-icon">🎯</span>
+          <span style="color: white;">Hybrid Forecast</span>
+        </div>
+      </div>
+
+      <!-- Key Features -->
+      <div id="features" class="features">
         <div class="feature-card">
-          <span class="feature-icon">🧠</span>
-          <h3 class="feature-title">AI-Powered Blending</h3>
-          <p class="feature-desc">Dynamically optimizing multiple NWP models using deep learning to produce the ultimate consensus forecast.</p>
+          <span class="feature-icon">⚙️</span>
+          <h3 class="feature-title">Adaptive Model Blending</h3>
+          <p class="feature-desc">Dynamically optimizes multiple NWP models using deep learning to produce the ultimate consensus forecast with minimal error.</p>
         </div>
         <div class="feature-card">
-          <span class="feature-icon">⚡</span>
-          <h3 class="feature-title">High-Res Accuracy</h3>
-          <p class="feature-desc">Delivering precise 12km resolution predictions for rainfall, temperature, and wind speed.</p>
+          <span class="feature-icon">🗺️</span>
+          <h3 class="feature-title">Regional Forecasting</h3>
+          <p class="feature-desc">Delivers precise, hyper-localized predictions specifically tailored to the unique climate patterns of the Indian subcontinent.</p>
         </div>
         <div class="feature-card">
-          <span class="feature-icon">🛡️</span>
-          <h3 class="feature-title">Operational Resilience</h3>
-          <p class="feature-desc">Built-in failover capabilities ensure continuous forecasting even during model data feed outages.</p>
+          <span class="feature-icon">🚨</span>
+          <h3 class="feature-title">Extreme Weather Alerts</h3>
+          <p class="feature-desc">Built-in hazard detection identifies severe conditions in advance, providing crucial warnings to safeguard lives and resources.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">📈</span>
+          <h3 class="feature-title">Improved Forecast Skill</h3>
+          <p class="feature-desc">Significantly reduces error margins and increases overall forecast reliability compared to standalone deterministic models.</p>
         </div>
       </div>
     </main>
