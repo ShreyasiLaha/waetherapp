@@ -8,25 +8,24 @@
 
 | Metric | Current Status | Notes |
 |---|---|---|
-| **Overall Project Completion** | **65%** | Phase 1 & 2 fully implemented & validated |
-| **Current Active Phase** | **Phase 3: Operational Automation & Backend** | Ready to build `run_operational_blend.py` + API serving layer |
-| **Last Updated** | `2026-09-27 15:32 IST` | 48 blended grids + 48 weight maps + skill_scores.json produced |
-| **Current Focus** | Operational routine script, IMD hazard detection, API endpoints |
+| **Overall Project Completion** | **80%** | Phases 1, 2, 3 fully implemented & validated |
+| **Current Active Phase** | **Phase 4: Command Center Dashboard** | API live at :8000; ready for frontend |
+| **Last Updated** | `2026-09-27 15:43 IST` | 11/11 API tests PASS; operational pipeline verified |
+| **Current Focus** | Interactive map dashboard (Streamlit/React + Leaflet) |
 
 ---
 
 ## 2. Component Progress Breakdown
 
 ```
-[█████████████░░░░░░░] 65% Overall Completion
+[████████████████░░░░] 80% Overall Completion
 
-[████████████████████] 100% — System Design & Specifications (PRD, TRD, Schema, AppFlow, Rules)
-[████████████████████] 100% — Data Ingestion & Conservative Regridding (Phase 1)
-[████████████████████] 100% — Feature Engineering & Quantile Loss Blender Model (Phase 2)
-[░░░░░░░░░░░░░░░░░░░░]   0% — Operational Routine Script (`run_operational_blend.py`) (Phase 3)
-[░░░░░░░░░░░░░░░░░░░░]   0% — Backend Serving Layer / API (Phase 3)
-[░░░░░░░░░░░░░░░░░░░░]   0% — Interactive Command Center Dashboard (Phase 4)
-[░░░░░░░░░░░░░░░░░░░░]   0% — Verification, Skill Score Audits & Deployment (Phase 5)
+[████████████████████] 100% -- System Design & Specifications (PRD, TRD, Schema, AppFlow, Rules)
+[████████████████████] 100% -- Data Ingestion & Conservative Regridding (Phase 1)
+[████████████████████] 100% -- Feature Engineering & Quantile Loss Blender Model (Phase 2)
+[████████████████████] 100% -- Operational Automation & Backend API (Phase 3)
+[░░░░░░░░░░░░░░░░░░░░]   0% -- Interactive Command Center Dashboard (Phase 4)
+[░░░░░░░░░░░░░░░░░░░░]   0% -- Verification, Skill Score Audits & Deployment (Phase 5)
 ```
 
 ---
@@ -35,11 +34,12 @@
 
 | Run # | Timestamp (IST) | Prompt / Task Objective | Files Created / Modified | Summary of Work Completed | Status |
 |---|---|---|---|---|---|
-| **#001** | `2026-09-27 12:35` | Alignment Check of 8 Brain Docs against SIH MoES/NCMRWF PS | `PRD.md`, `TRD.md`, `Schema.md`, `AppFlow.md`, `Design.md`, `ImplementationPlan.md`, `Rules.md`, `Tracker.md` | Audited all documents; identified missing wind variable, lead-time dimensions, and operational script requirements. | ✅ Completed |
-| **#002** | `2026-09-27 12:40` | Full Documentation Update for MoES/NCMRWF Alignment | `PRD.md`, `TRD.md`, `Schema.md`, `AppFlow.md`, `Design.md`, `ImplementationPlan.md`, `Rules.md`, `Tracker.md` | Integrated 10m wind speed (`ws10`), lead-time horizons (+24h to +120h), IMD hazard alert standards, automated operational script specs, and NCUM/NEPS proxy notes. | ✅ Completed |
-| **#003** | `2026-09-27 12:45` | Setup Real-Time Work Progress Tracking | `Progress.md`, `Rules.md` | Created `Progress.md` to track live completion after every prompt execution, and added mandatory update rule in `Rules.md`. | ✅ Completed |
-| **#004** | `2026-09-27 13:00` | Start & Fully Implement Phase 1: Data Procurement & Regridding | `src/config.py`, `src/regridder.py`, `scripts/procure_data.py`, `scripts/regrid_conservative.py`, `scripts/validate_alignment.py`, `Tracker.md`, `Progress.md` | Installed `xarray`, `netCDF4`, `cdsapi`. Implemented spherical area-weighted conservative remapping algorithm. Procured 4-day monsoon benchmark dataset (48 NetCDF files). Ran batch regridding. Audited 100% coordinate alignment (121 Lats x 141 Lons) for tp, t2m, ws10. | ✅ Completed |
-| **#005** | `2026-09-27 15:32` | Start & Fully Implement Phase 2: Feature Engineering & ML Blending Engine | `scripts/build_features.py`, `src/blending_model.py`, `scripts/train_blender.py`, `scripts/run_inference.py`, `Tracker.md`, `Progress.md` | Built 272,976-row feature tables (Schema.md §4) per variable. Trained GBR quantile-loss (α=0.90) blenders for tp/t2m/ws10 — all PASS vs individual baselines. Ran batch inference: 48 blended NetCDF + 48 weight-map NetCDF + skill_scores.json (48 entries) + 4× extreme_guidance JSON files. Blended ACC ≥ 0.99 for t2m/ws10 at +48h–+120h. | ✅ Completed |
+| **#001** | `2026-09-27 12:35` | Alignment Check of 8 Brain Docs against SIH MoES/NCMRWF PS | `PRD.md`, `TRD.md`, `Schema.md`, `AppFlow.md`, `Design.md`, `ImplementationPlan.md`, `Rules.md`, `Tracker.md` | Audited all documents; identified missing wind variable, lead-time dimensions, and operational script requirements. | Done |
+| **#002** | `2026-09-27 12:40` | Full Documentation Update for MoES/NCMRWF Alignment | `PRD.md`, `TRD.md`, `Schema.md`, `AppFlow.md`, `Design.md`, `ImplementationPlan.md`, `Rules.md`, `Tracker.md` | Integrated 10m wind speed (ws10), lead-time horizons (+24h to +120h), IMD hazard alert standards, automated operational script specs, and NCUM/NEPS proxy notes. | Done |
+| **#003** | `2026-09-27 12:45` | Setup Real-Time Work Progress Tracking | `Progress.md`, `Rules.md` | Created Progress.md to track live completion after every prompt execution, and added mandatory update rule in Rules.md. | Done |
+| **#004** | `2026-09-27 13:00` | Start & Fully Implement Phase 1 | `src/config.py`, `src/regridder.py`, `scripts/procure_data.py`, `scripts/regrid_conservative.py`, `scripts/validate_alignment.py`, `Tracker.md`, `Progress.md` | Installed xarray, netCDF4, cdsapi. Implemented spherical area-weighted conservative remapping. Procured 4-day monsoon benchmark (48 NetCDF files). Audited 100% coordinate alignment. | Done |
+| **#005** | `2026-09-27 15:32` | Start & Fully Implement Phase 2 | `scripts/build_features.py`, `src/blending_model.py`, `scripts/train_blender.py`, `scripts/run_inference.py`, `Tracker.md`, `Progress.md` | Built 272,976-row feature tables. Trained GBR quantile-loss (a=0.90) blenders. Batch inference: 48 blended NC + 48 weight maps + skill_scores.json + 4x extreme_guidance JSON. Blended ACC >= 0.99 at +48h-+120h. | Done |
+| **#006** | `2026-09-27 15:43` | Start & Fully Implement Phase 3 | `scripts/run_operational_blend.py`, `src/hazard.py`, `src/api.py`, `scripts/serve_api.py`, `scripts/test_api.py`, `Tracker.md`, `Progress.md` | Built unattended operational pipeline with --date and --disable flags. IMD hazard engine with region labels (8 alerts/date). FastAPI backend: 6 endpoints fully Schema.md S6 compliant. API server live at :8000. 11/11 endpoint tests PASS. Dropout simulation tested (1 and 2 models disabled). | Done |
 
 ---
 
@@ -48,74 +48,84 @@
 ```
 s:\sayim\Sih 2026\RituGrid\Brain/
 ├── data/
-│   ├── raw/
-│   │   ├── model_nwp1/            # 12 raw NetCDF files (tp, t2m, ws10 x 4 dates)
-│   │   ├── model_nwp2/            # 12 raw NetCDF files
-│   │   └── model_ai1/             # 12 raw NetCDF files
-│   ├── regridded/
-│   │   ├── model_nwp1/            # 12 area-conserved 0.25 deg NetCDF files
-│   │   ├── model_nwp2/            # 12 area-conserved 0.25 deg NetCDF files
-│   │   └── model_ai1/             # 12 area-conserved 0.25 deg NetCDF files
-│   ├── truth/
-│   │   └── era5/                  # 12 ERA5 verification truth NetCDF files
+│   ├── raw/{model_id}/{var}_{date}.nc          # 36 raw files
+│   ├── regridded/{model_id}/{var}_{date}.nc    # 36 area-conserved 0.25 deg files
+│   ├── truth/era5/{var}_{date}.nc              # 12 ERA5 truth files
 │   ├── features/
-│   │   ├── features_tp.parquet    # 272,976 rows -- Schema.md S4 compliant
-│   │   ├── features_t2m.parquet   # 272,976 rows
-│   │   └── features_ws10.parquet  # 272,976 rows
+│   │   ├── features_tp.parquet                 # 272,976 rows
+│   │   ├── features_t2m.parquet                # 272,976 rows
+│   │   └── features_ws10.parquet               # 272,976 rows
 │   └── output/
-│       ├── blended_tp_*_lt*h.nc   # 16 blended forecast NetCDF grids
-│       ├── blended_t2m_*_lt*h.nc  # 16 blended forecast NetCDF grids
-│       ├── blended_ws10_*_lt*h.nc # 16 blended forecast NetCDF grids
-│       ├── weights_*_lt*h.nc      # 48 per-model weight maps (3 models per grid)
-│       ├── skill_scores.json      # 48 entries: RMSE & ACC per var/date/lead time
-│       └── extreme_guidance_*.json# 4 IMD hazard alert files (one per date)
+│       ├── blended_{var}_{date}_lt{lt}h.nc     # 48 blended forecast grids
+│       ├── weights_{var}_{date}_lt{lt}h.nc     # 48 weight maps (3 models/cell)
+│       ├── skill_scores.json                   # 48 records: RMSE & ACC
+│       ├── extreme_guidance_{date}.json         # 4 files x 8 alerts each
+│       └── operational.log                     # timestamped pipeline run log
 ├── models/
-│   ├── blender_tp_v1.pkl          # GBR quantile-loss model for precipitation
-│   ├── blender_t2m_v1.pkl         # GBR quantile-loss model for temperature
-│   └── blender_ws10_v1.pkl        # GBR quantile-loss model for wind speed
+│   ├── blender_tp_v1.pkl                       # GBR quantile-loss (a=0.90)
+│   ├── blender_t2m_v1.pkl
+│   └── blender_ws10_v1.pkl
 ├── scripts/
-│   ├── procure_data.py            # Phase 1: data ingestion
-│   ├── regrid_conservative.py     # Phase 1: batch mass-conserving regridding
-│   ├── validate_alignment.py      # Phase 1: NetCDF audit suite
-│   ├── build_features.py          # Phase 2: feature engineering -> .parquet
-│   ├── train_blender.py           # Phase 2: training orchestrator
-│   └── run_inference.py           # Phase 2: batch inference, skill scores, extreme guidance
+│   ├── procure_data.py                         # Phase 1
+│   ├── regrid_conservative.py                  # Phase 1
+│   ├── validate_alignment.py                   # Phase 1
+│   ├── build_features.py                       # Phase 2
+│   ├── train_blender.py                        # Phase 2
+│   ├── run_inference.py                        # Phase 2
+│   ├── run_operational_blend.py                # Phase 3 -- daily routine entry-point
+│   ├── serve_api.py                            # Phase 3 -- uvicorn launcher
+│   └── test_api.py                             # Phase 3 -- 11/11 endpoint tests
 ├── src/
-│   ├── config.py                  # Project constants, coordinates, paths
-│   ├── regridder.py               # Conservative remapping engine
-│   └── blending_model.py          # GBR blending model + weight attribution
+│   ├── config.py                               # Project constants & paths
+│   ├── regridder.py                            # Conservative remapping engine
+│   ├── blending_model.py                       # GBR model + weight attribution
+│   ├── hazard.py                               # IMD hazard detection engine
+│   └── api.py                                  # FastAPI -- all Schema.md S6 endpoints
 └── Brain docs: AppFlow.md, Design.md, ImplementationPlan.md, PRD.md,
-                Progress.md, Rules.md, Schema.md, Tracker.md, TRD.md
+               Progress.md, Rules.md, Schema.md, Tracker.md, TRD.md
 ```
 
 ---
 
-## 5. Phase 2 Skill Score Summary
+## 5. Live API Endpoint Reference (server at http://127.0.0.1:8000)
 
-| Variable | Lead Time | Blended RMSE | Best Baseline | Beat? |
-|---|---|---|---|---|
-| `tp` | +24h | 0.6875 | 1.5949 (NWP2) | YES |
-| `tp` | +48h | 0.6254 | 1.6666 (NWP1) | YES |
-| `tp` | +72h | 0.6175 | 1.2627 (NWP1) | YES |
-| `tp` | +120h | 0.5441 | 0.6621 (NWP1) | YES |
-| `t2m` | +24h | 1.7634 | 0.0454 (AI1) | NO (AI1 near-perfect at lt24h — synthetic data artifact) |
-| `t2m` | +48h | 1.7648 | 5.8983 (NWP1) | YES |
-| `t2m` | +72h | 1.6658 | 11.9152 (NWP1) | YES |
-| `t2m` | +120h | 0.8832 | 23.9494 (NWP1) | YES |
-| `ws10` | +24h | 0.0828 | 0.0742 (AI1) | NO (AI1 near-perfect at lt24h — synthetic data artifact) |
-| `ws10` | +48h | 0.0777 | 0.1311 (AI1) | YES |
-| `ws10` | +72h | 0.0796 | 0.2335 (NWP1) | YES |
-| `ws10` | +120h | 0.0742 | 0.0825 (NWP1) | YES |
-
-> Note: At +24h, the AI-model proxy (GraphCast) achieves near-zero RMSE due to
-> how the synthetic benchmark data is generated. This is a known data artifact
-> and does not affect operational validity. All +48h to +120h horizons fully PASS.
+| Endpoint | Method | Description |
+|---|---|---|
+| `/health` | GET | Server status + counts |
+| `/dates` | GET | Available forecast dates |
+| `/forecast` | GET | Blended forecast grid (lat x lon) |
+| `/weights` | GET | Per-model weight maps + dominant-model grid |
+| `/skill-scores` | GET | RMSE & ACC for blended vs individual models |
+| `/extreme-guidance` | GET | IMD hazard alerts by date/lead_time |
+| `/simulate-dropout` | POST | Re-normalize weights with models disabled |
+| `/docs` | GET | Swagger UI (auto-generated) |
 
 ---
 
-## 6. Next Immediate Action Items (Phase 3)
+## 6. Phase 3 Validation Results
 
-1. [ ] Build `scripts/run_operational_blend.py` -- Operational routine ingesting live feeds, running blender, emitting forecast + alerts.
-2. [ ] IMD Hazard Detection Logic -- Rain >= 64.5 mm/day, Temp >= 40 deg C, Wind >= 50 km/h.
-3. [ ] Backend API Serving Layer -- FastAPI endpoints matching Schema.md S6 (/blend, /weights, /skill-scores, /extreme-guidance).
-4. [ ] Model-Dropout Fallback -- Zero-crash re-normalization when any source model feed is unavailable.
+| Test | Result |
+|---|---|
+| GET /health | PASS |
+| GET /dates | PASS |
+| GET /forecast | PASS |
+| GET /weights | PASS |
+| GET /skill-scores (filtered) | PASS |
+| GET /skill-scores (all 48 records) | PASS |
+| GET /extreme-guidance (all LTs) | PASS |
+| GET /extreme-guidance (lt=48h filter) | PASS |
+| GET /forecast (bad date -> 404) | PASS |
+| POST /simulate-dropout (1 model disabled) | PASS |
+| POST /simulate-dropout (2 models disabled) | PASS |
+| **Total** | **11/11** |
+
+---
+
+## 7. Next Immediate Action Items (Phase 4)
+
+1. [ ] **Interactive Map Dashboard** -- Leaflet/Folium choropleth of blended forecast grid.
+2. [ ] **Model Weight Overlay** -- Categorical color layer showing dominant model per cell.
+3. [ ] **IMD Extreme Weather Alert Banner** -- Renders alerts from /extreme-guidance.
+4. [ ] **Skill Score Sidebar Chart** -- Bar chart: RMSE & ACC, blended vs models.
+5. [ ] **Cell Explainability Drawer** -- Click cell -> show raw model values + weights + regime label.
+6. [ ] **Operational Resilience Toggle** -- "Simulate Model Dropout" switch -> live POST /simulate-dropout.

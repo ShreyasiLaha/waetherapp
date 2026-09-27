@@ -33,10 +33,10 @@
 ## Phase 3 — Operational Automation & Backend
 | Task | Owner | Status | Notes |
 |---|---|---|---|
-| Operational routine script (`scripts/run_operational_blend.py`) | | Not Started | Core operational deliverable |
-| IMD extreme hazard detection logic (Rain, Heat, Wind) | | Not Started | |
-| Data-loading / API endpoints built | | Not Started | Matches Schema.md §6 |
-| Fallback / model-dropout re-normalization logic | | Not Started | Zero-crash verification |
+| Operational routine script (`scripts/run_operational_blend.py`) | Backend Eng | Done | --date all / --disable flag; outputs NC + JSON for all 4 dates |
+| IMD extreme hazard detection logic (Rain, Heat, Wind) | Backend Eng | Done | `src/hazard.py`; 8 alerts/date; region attribution; Schema.md §6 compliant |
+| Data-loading / API endpoints built | Backend Eng | Done | FastAPI `src/api.py`; 6 endpoints; 11/11 tests PASS; Swagger at :8000/docs |
+| Fallback / model-dropout re-normalization logic | Backend Eng | Done | POST /simulate-dropout; tested disable 1 and 2 models; zero-crash verified |
 
 ## Phase 4 — Command Center Dashboard
 | Task | Owner | Status | Notes |
