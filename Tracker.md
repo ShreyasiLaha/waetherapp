@@ -14,11 +14,11 @@
 ## Phase 1 — Data Procurement & Regridding
 | Task | Owner | Status | Notes |
 |---|---|---|---|
-| ERA5 truth downloaded (tp, t2m, ws10) | | Not Started | |
-| GFS (NWP proxy) data downloaded | | Not Started | |
-| AI-model reforecast downloaded (GraphCast/Pangu) | | Not Started | |
-| Conservative regridding script (0.25° common grid) | | Not Started | |
-| Dimension & coordinate alignment validated | | Not Started | (lat, lon, time/lead_time) |
+| ERA5 truth downloaded (tp, t2m, ws10) | Data Eng | Done | July 14–17 2023 monsoon benchmark |
+| GFS (NWP proxy) data downloaded | Data Eng | Done | Native 0.5° resolution ingested |
+| AI-model reforecast downloaded (GraphCast/Pangu) | Data Eng | Done | AI reforecast ingested |
+| Conservative regridding script (0.25° common grid) | Geospatial Eng | Done | Spherical area-weighted mass-conserved |
+| Dimension & coordinate alignment validated | QA / Eng | Done | 48/48 NetCDF files verified via audit suite |
 
 ## Phase 2 — ML Blending Models
 | Task | Owner | Status | Notes |

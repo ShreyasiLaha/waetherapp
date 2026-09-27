@@ -8,20 +8,20 @@
 
 | Metric | Current Status | Notes |
 |---|---|---|
-| **Overall Project Completion** | **15%** | Foundation & Architecture specifications fully locked & SIH-aligned |
-| **Current Active Phase** | **Phase 0: Setup & Env Preparation** | Ready to begin Phase 1 Data Procurement |
-| **Last Updated** | `2026-09-27 12:45 IST` | Project Documentation fully aligned with MoES / NCMRWF PS |
-| **Current Focus** | Project scaffolding, environment check, and data pipeline setup |
+| **Overall Project Completion** | **40%** | Phase 1 (Data Procurement & Regridding) fully implemented & validated |
+| **Current Active Phase** | **Phase 2: Feature Engineering & ML Blending Engine** | Ready to build `features.parquet` & train models |
+| **Last Updated** | `2026-09-27 13:00 IST` | 48/48 NetCDF files verified via audit suite |
+| **Current Focus** | Tabular feature engineering, lead-time dynamics, and quantile loss blending model |
 
 ---
 
 ## 2. Component Progress Breakdown
 
 ```
-[███░░░░░░░░░░░░░░░░░] 15% Overall Completion
+[████████░░░░░░░░░░░░] 40% Overall Completion
 
 [████████████████████] 100% — System Design & Specifications (PRD, TRD, Schema, AppFlow, Rules)
-[░░░░░░░░░░░░░░░░░░░░]   0% — Data Ingestion & Conservative Regridding (Phase 1)
+[████████████████████] 100% — Data Ingestion & Conservative Regridding (Phase 1)
 [░░░░░░░░░░░░░░░░░░░░]   0% — Feature Engineering & Quantile Loss Blender Model (Phase 2)
 [░░░░░░░░░░░░░░░░░░░░]   0% — Operational Routine Script (`run_operational_blend.py`) (Phase 3)
 [░░░░░░░░░░░░░░░░░░░░]   0% — Backend Serving Layer / API (Phase 3)
@@ -38,6 +38,7 @@
 | **#001** | `2026-09-27 12:35` | Alignment Check of 8 Brain Docs against SIH MoES/NCMRWF PS | `PRD.md`, `TRD.md`, `Schema.md`, `AppFlow.md`, `Design.md`, `ImplementationPlan.md`, `Rules.md`, `Tracker.md` | Audited all documents; identified missing wind variable, lead-time dimensions, and operational script requirements. | ✅ Completed |
 | **#002** | `2026-09-27 12:40` | Full Documentation Update for MoES/NCMRWF Alignment | `PRD.md`, `TRD.md`, `Schema.md`, `AppFlow.md`, `Design.md`, `ImplementationPlan.md`, `Rules.md`, `Tracker.md` | Integrated 10m wind speed (`ws10`), lead-time horizons (+24h to +120h), IMD hazard alert standards, automated operational script specs, and NCUM/NEPS proxy notes. | ✅ Completed |
 | **#003** | `2026-09-27 12:45` | Setup Real-Time Work Progress Tracking | `Progress.md`, `Rules.md` | Created `Progress.md` to track live completion after every prompt execution, and added mandatory update rule in `Rules.md`. | ✅ Completed |
+| **#004** | `2026-09-27 13:00` | Start & Fully Implement Phase 1: Data Procurement & Regridding | `src/config.py`, `src/regridder.py`, `scripts/procure_data.py`, `scripts/regrid_conservative.py`, `scripts/validate_alignment.py`, `Tracker.md`, `Progress.md` | Installed `xarray`, `netCDF4`, `cdsapi`. Implemented spherical area-weighted conservative remapping algorithm. Procured 4-day monsoon benchmark dataset (48 NetCDF files). Ran batch regridding. Audited 100% coordinate alignment (121 Lats x 141 Lons) for tp, t2m, ws10. | ✅ Completed |
 
 ---
 
@@ -45,21 +46,39 @@
 
 ```
 s:\sayim\Sih 2026\RituGrid\Brain/
-├── AppFlow.md              # Pipeline, serving, and screen flows
-├── Design.md               # UI/UX, palette, layout, and command center specs
-├── ImplementationPlan.md   # Day 1–3 hackathon roadmap
-├── PRD.md                  # Product requirements & MoES/NCMRWF objectives
-├── Progress.md             # Real-time prompt execution & completion log (THIS FILE)
-├── Rules.md                # AI coding ground rules & boundaries
-├── Schema.md               # Exact file, NetCDF, Parquet, and API schemas
-├── Tracker.md              # High-level task status board
-└── TRD.md                  # Tech stack, models, regridding, and data sources
+├── data/
+│   ├── raw/
+│   │   ├── model_nwp1/           # 12 raw NetCDF files (tp, t2m, ws10)
+│   │   ├── model_nwp2/           # 12 raw NetCDF files (tp, t2m, ws10)
+│   │   └── model_ai1/            # 12 raw NetCDF files (tp, t2m, ws10)
+│   ├── regridded/
+│   │   ├── model_nwp1/           # 12 area-conserved 0.25° NetCDF files
+│   │   ├── model_nwp2/           # 12 area-conserved 0.25° NetCDF files
+│   │   └── model_ai1/            # 12 area-conserved 0.25° NetCDF files
+│   └── truth/
+│       └── era5/                 # 12 ERA5 verification truth NetCDF files
+├── scripts/
+│   ├── procure_data.py           # Ingestion script for GFS, Ensemble, AI & ERA5 truth
+│   ├── regrid_conservative.py    # Batch mass-conserving area-weighted regridding
+│   └── validate_alignment.py     # Dimensional & coordinate verification audit suite
+├── src/
+│   ├── config.py                 # Project constants, coordinates, and paths
+│   └── regridder.py              # Spherical area-weighted conservative remapping engine
+├── AppFlow.md                    # Pipeline, serving, and screen flows
+├── Design.md                     # UI/UX, palette, layout, and command center specs
+├── ImplementationPlan.md         # Day 1–3 hackathon roadmap
+├── PRD.md                        # Product requirements & MoES/NCMRWF objectives
+├── Progress.md                   # Real-time prompt execution & completion log (THIS FILE)
+├── Rules.md                      # AI coding ground rules & boundaries
+├── Schema.md                     # Exact file, NetCDF, Parquet, and API schemas
+├── Tracker.md                    # High-level task status board
+└── TRD.md                        # Tech stack, models, regridding, and data sources
 ```
 
 ---
 
-## 5. Next Immediate Action Items
+## 5. Next Immediate Action Items (Phase 2)
 
-1. [ ] **Lock Frontend Choice:** Confirm Streamlit vs React + Leaflet.js (see `ImplementationPlan.md §Phase 0`).
-2. [ ] **Verify Python Environment:** Confirm local installation of `xarray`, `netCDF4`, `cfgrib`, `scikit-learn`, `xesmf` / `xarray-regrid`.
-3. [ ] **Procure Benchmark Data:** Run sample download script for ERA5 CDS, NOAA GFS, and GraphCast for selected bounding box (`5–35°N, 65–100°E`).
+1. [ ] **Build `features.parquet` (Phase 2):** Create feature engineering pipeline extracting tabular training samples (`lat`, `lon`, `lead_time_hours`, `day_of_year`, `cross_model_variance`, `truth_value`).
+2. [ ] **Train Quantile-Loss Blenders:** Train adaptive models for `tp`, `t2m`, `ws10` penalizing under-prediction of extremes.
+3. [ ] **Run Batch Inference & Compute Skill Scores:** Output `blended_*.nc`, `weights_*.nc`, and verify that Blended RMSE beats all individual models.
