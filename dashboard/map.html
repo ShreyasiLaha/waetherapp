@@ -199,9 +199,9 @@
       box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
     }
     
-    /* Dark mode for Leaflet tiles (invert filter trick) */
-    .leaflet-tile-pane {
-      filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+    /* Sleek dark canvas styling */
+    .leaflet-container {
+      background: #0f172a;
     }
 
   </style>
@@ -214,6 +214,7 @@
     <nav>
       <a href="landing.html" class="nav-link">🏠 Home</a>
       <a href="index.html" class="nav-link">📊 Dashboard</a>
+      <a href="operations.html" class="nav-link">⚡ Operational Console</a>
       <a href="map.html" class="nav-link active">🌍 Interactive Map</a>
       <a href="comparison.html" class="nav-link">🤖 Model Comparison</a>
       <a href="weights.html" class="nav-link">⚖️ Adaptive Weights</a>
@@ -280,9 +281,14 @@
       zoomControl: false // Move zoom control if needed
     });
 
-    // Add base map tiles (standard OSM, but inverted to dark via CSS)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+    // Add base map tiles (Esri World Dark Gray - 100% free, zero API key watermark)
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Esri, &copy; OpenStreetMap contributors',
+      maxZoom: 16
+    }).addTo(map);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+      attribution: '',
+      maxZoom: 16
     }).addTo(map);
     
     // Add Zoom Control to bottom right

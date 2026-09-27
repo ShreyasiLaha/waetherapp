@@ -62,14 +62,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount static dashboard UI
+# Mount modern React TypeScript SPA & legacy static dashboard UI
+FRONTEND_DIST = PROJECT_ROOT / "frontend" / "dist"
 DASHBOARD_DIR = PROJECT_ROOT / "dashboard"
+
+if FRONTEND_DIST.exists():
+    app.mount("/app", StaticFiles(directory=str(FRONTEND_DIST), html=True), name="app")
+
 if DASHBOARD_DIR.exists():
     app.mount("/dashboard", StaticFiles(directory=str(DASHBOARD_DIR), html=True), name="dashboard")
 
 @app.get("/", include_in_schema=False)
 def root():
+    if FRONTEND_DIST.exists():
+        return RedirectResponse(url="/app/")
     return RedirectResponse(url="/dashboard/landing.html")
+
 
 
 
@@ -142,9 +150,9 @@ def get_dates():
 
 @app.get("/forecast", summary="Blended forecast grid for date/lead_time/variable")
 def get_forecast(
-    date: str = Query(..., example="20230715"),
-    lead_time: int = Query(..., example=48),
-    variable: str = Query(..., example="tp"),
+    date: str = Query(..., examples=["20230715"]),
+    lead_time: int = Query(..., examples=[48]),
+    variable: str = Query(..., examples=["tp"]),
 ):
     """
     Returns the blended forecast grid (lat × lon) for the requested params.
@@ -168,9 +176,9 @@ def get_forecast(
 
 @app.get("/weights", summary="Per-model weight maps for date/lead_time/variable")
 def get_weights(
-    date: str = Query(..., example="20230715"),
-    lead_time: int = Query(..., example=48),
-    variable: str = Query(..., example="tp"),
+    date: str = Query(..., examples=["20230715"]),
+    lead_time: int = Query(..., examples=[48]),
+    variable: str = Query(..., examples=["tp"]),
 ):
     """
     Returns per-model weight grids + dominant-model grid.
@@ -213,9 +221,9 @@ def get_weights(
 
 @app.get("/skill-scores", summary="RMSE & ACC for blended + individual models")
 def get_skill_scores(
-    date: Optional[str]  = Query(None, example="20230715"),
-    lead_time: Optional[int] = Query(None, example=48),
-    variable: Optional[str]  = Query(None, example="tp"),
+    date: Optional[str]  = Query(None, examples=["20230715"]),
+    lead_time: Optional[int] = Query(None, examples=[48]),
+    variable: Optional[str]  = Query(None, examples=["tp"]),
 ):
     """
     Filter skill_scores.json by any combination of date/lead_time/variable.
@@ -243,8 +251,8 @@ def get_skill_scores(
 
 @app.get("/extreme-guidance", summary="IMD hazard alerts for a date & optional lead_time")
 def get_extreme_guidance(
-    date: str = Query(..., example="20230715"),
-    lead_time: Optional[int] = Query(None, example=48),
+    date: str = Query(..., examples=["20230715"]),
+    lead_time: Optional[int] = Query(None, examples=[48]),
 ):
     """
     Returns IMD extreme weather alert records for the given date.
