@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Extreme Weather Alerts | RituGrid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      
+      --risk-critical: #ef4444; /* Red */
+      --risk-high: #f97316;    /* Orange */
+      --risk-moderate: #f59e0b; /* Yellow/Amber */
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'Outfit', sans-serif;
+      background: radial-gradient(circle at top left, #1e1b4b 0%, #0f172a 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 250px;
+      background: rgba(15, 23, 42, 0.8);
+      border-right: 1px solid var(--card-border);
+      backdrop-filter: blur(20px);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 3rem;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 0.5rem;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background: rgba(59, 130, 246, 0.1);
+      color: #38bdf8;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 2.5rem 4rem;
+      overflow-y: auto;
+    }
+    
+    .header {
+      margin-bottom: 3rem;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Filter Buttons */
+    .filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 0.75rem 1.5rem;
+      border-radius: 2rem;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+    
+    .filter-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+    }
+    
+    .filter-btn.active {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.5);
+      color: white;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+    }
+
+    /* Alert Cards Grid */
+    .alerts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    .alert-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+      transition: transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .alert-card:hover {
+      transform: translateY(-5px);
+    }
+
+    /* Top glow effect based on risk */
+    .alert-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+    }
+    
+    .risk-critical::before { background: var(--risk-critical); box-shadow: 0 0 15px var(--risk-critical); }
+    .risk-high::before { background: var(--risk-high); box-shadow: 0 0 15px var(--risk-high); }
+    .risk-moderate::before { background: var(--risk-moderate); box-shadow: 0 0 15px var(--risk-moderate); }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+    }
+
+    .alert-type {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    
+    .alert-icon {
+      font-size: 1.8rem;
+    }
+
+    .risk-badge {
+      padding: 0.35rem 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .badge-critical { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.5); }
+    .badge-high { background: rgba(249, 115, 22, 0.2); color: #fdba74; border: 1px solid rgba(249, 115, 22, 0.5); }
+    .badge-moderate { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.5); }
+
+    /* Alert Data Rows */
+    .alert-data {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding-bottom: 0.75rem;
+    }
+    
+    .data-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .data-label {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .data-value {
+      font-weight: 600;
+      color: white;
+      text-align: right;
+    }
+
+    .prob-bar-container {
+      width: 100px;
+      height: 6px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 3px;
+      margin-top: 4px;
+      overflow: hidden;
+    }
+    
+    .prob-bar {
+      height: 100%;
+      background: var(--risk-critical);
+      border-radius: 3px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">RituGrid</div>
+    <nav>
+      <a href="landing.html" class="nav-link">🏠 Home</a>
+      <a href="index.html" class="nav-link">📊 Dashboard</a>
+      <a href="map.html" class="nav-link">🌍 Interactive Map</a>
+      <a href="comparison.html" class="nav-link">🤖 Model Comparison</a>
+      <a href="weights.html" class="nav-link">⚖️ Adaptive Weights</a>
+      <a href="analysis.html" class="nav-link">📈 Forecast Analysis</a>
+      <a href="alerts.html" class="nav-link active">🚨 Alerts</a>
+      <a href="regional.html" class="nav-link">📍 Regional Forecast</a>
+      <a href="skill.html" class="nav-link">🧠 Model Skill</a>
+      <a href="report.html" class="nav-link">📋 Forecast Report</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="header">
+      <h1>🚨 Extreme Weather Tracking</h1>
+      <p>Real-time hazard detection and automated warnings powered by Hybrid AI Consensus.</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <button class="filter-btn active">All Threats</button>
+      <button class="filter-btn">🌧️ Heavy Rainfall</button>
+      <button class="filter-btn">🔥 Heat Wave</button>
+      <button class="filter-btn">💨 High Wind</button>
+      <button class="filter-btn">⛈️ Severe Weather</button>
+    </div>
+
+    <!-- Alerts Grid -->
+    <div class="alerts-grid">
+      
+      <!-- Card 1: Heavy Rainfall -->
+      <div class="alert-card risk-critical">
+        <div class="card-header">
+          <div class="alert-type">
+            <span class="alert-icon">🌧️</span>
+            <span>Heavy Rainfall</span>
+          </div>
+          <div class="risk-badge badge-critical">Critical</div>
+        </div>
+        <div class="alert-data">
+          <div class="data-row">
+            <div class="data-label">📍 Location</div>
+            <div class="data-value">Mumbai, Maharashtra</div>
+          </div>
+          <div class="data-row">
+            <div class="data-label">⏱️ Expected Time</div>
+            <div class="data-value">In 12 hours<br><span style="font-size:0.8rem; color:var(--text-muted);">Jul 15, 14:00 IST</span></div>
+          </div>
+          <div class="data-row">
+            <div class="data-label">🎯 Probability</div>
+            <div class="data-value">
+              88%
+              <div class="prob-bar-container"><div class="prob-bar" style="width: 88%; background: var(--risk-critical);"></div></div>
+            </div>
+          </div>
+          <div class="data-row">
+            <div class="data-label">🧠 Source</div>
+            <div class="data-value" style="color: #38bdf8;">Hybrid AI Consensus</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Heat Wave -->
+      <div class="alert-card risk-high">
+        <div class="card-header">
+          <div class="alert-type">
+            <span class="alert-icon">🔥</span>
+            <span>Heat Wave</span>
+          </div>
+          <div class="risk-badge badge-high">High</div>
+        </div>
+        <div class="alert-data">
+          <div class="data-row">
+            <div class="data-label">📍 Location</div>
+            <div class="data-value">New Delhi, NCR</div>
+          </div>
+          <div class="data-row">
+            <div class="data-label">⏱️ Expected Time</div>
+            <div class="data-value">Tomorrow<br><span style="font-size:0.8rem; color:var(--text-muted);">Jul 16, Peak 15:00 IST</span></div>
+          </div>
+          <div class="data-row">
+            <div class="data-label">🎯 Probability</div>
+            <div class="data-value">
+              75%
+              <div class="prob-bar-container"><div class="prob-bar" style="width: 75%; background: var(--risk-high);"></div></div>
+            </div>
+          </div>
+          <div class="data-row">
+            <div class="data-label">🧠 Source</div>
+            <div class="data-value" style="color: #38bdf8;">Hybrid AI Consensus</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: High Wind -->
+      <div class="alert-card risk-moderate">
+        <div class="card-header">
+          <div class="alert-type">
+            <span class="alert-icon">💨</span>
+            <span>High Wind</span>
+          </div>
+          <div class="risk-badge badge-moderate">Moderate</div>
+        </div>
+        <div class="alert-data">
+          <div class="data-row">
+            <div class="data-label">📍 Location</div>
+            <div class="data-value">Coastal Odisha</div>
+          </div>
+          <div class="data-row">
+            <div class="data-label">⏱️ Expected Time</div>
+            <div class="data-value">In 48 hours<br><span style="font-size:0.8rem; color:var(--text-muted);">Jul 17, 08:00 IST</span></div>
+          </div>
+          <div class="data-row">
+            <div class="data-label">🎯 Probability</div>
+            <div class="data-value">
+              60%
+              <div class="prob-bar-container"><div class="prob-bar" style="width: 60%; background: var(--risk-moderate);"></div></div>
+            </div>
+          </div>
+          <div class="data-row">
+            <div class="data-label">🧠 Source</div>
+            <div class="data-value" style="color: #a855f7;">AI Output (GraphCast)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Severe Weather -->
+      <div class="alert-card risk-high">
+        <div class="card-header">
+          <div class="alert-type">
+            <span class="alert-icon">⛈️</span>
+            <span>Thunderstorm</span>
+          </div>
+          <div class="risk-badge badge-high">High</div>
+        </div>
+        <div class="alert-data">
+          <div class="data-row">
+            <div class="data-label">📍 Location</div>
+            <div class="data-value">Bengaluru, KA</div>
+          </div>
+          <div class="data-row">
+            <div class="data-label">⏱️ Expected Time</div>
+            <div class="data-value">In 6 hours<br><span style="font-size:0.8rem; color:var(--text-muted);">Jul 15, 18:00 IST</span></div>
+          </div>
+          <div class="data-row">
+            <div class="data-label">🎯 Probability</div>
+            <div class="data-value">
+              82%
+              <div class="prob-bar-container"><div class="prob-bar" style="width: 82%; background: var(--risk-high);"></div></div>
+            </div>
+          </div>
+          <div class="data-row">
+            <div class="data-label">🧠 Source</div>
+            <div class="data-value" style="color: #f59e0b;">NWP Deterministic</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</body>
+</html>

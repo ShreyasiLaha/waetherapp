@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Model Skill | RituGrid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0f172a; --card-bg: rgba(30, 41, 59, 0.7); --card-border: rgba(255, 255, 255, 0.1);
+      --text-main: #f8fafc; --text-muted: #94a3b8; --primary: #3b82f6; --accent: #38bdf8;
+    }
+    body { margin: 0; font-family: 'Outfit', sans-serif; background: radial-gradient(circle at top left, #1e1b4b 0%, #0f172a 100%); color: var(--text-main); min-height: 100vh; display: flex; }
+    .sidebar { width: 250px; background: rgba(15, 23, 42, 0.8); border-right: 1px solid var(--card-border); backdrop-filter: blur(20px); padding: 2rem; display: flex; flex-direction: column; }
+    .brand { font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 3rem; }
+    .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 500; padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 0.5rem; transition: all 0.2s; display: flex; align-items: center; gap: 0.75rem; }
+    .nav-link:hover, .nav-link.active { background: rgba(59, 130, 246, 0.1); color: #38bdf8; }
+    .main-content { flex: 1; padding: 2.5rem 4rem; overflow-y: auto; }
+    .header { margin-bottom: 3rem; }
+    .header h1 { margin: 0; font-size: 2.5rem; font-weight: 700; }
+    .header p { color: var(--text-muted); font-size: 1.1rem; margin-top: 0.5rem; }
+    
+    .filters { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .filter-group select { background: rgba(0,0,0,0.3); border: 1px solid var(--card-border); color: white; padding: 0.5rem 1rem; border-radius: 2rem; font-family: inherit; font-size: 0.95rem; outline: none; }
+    
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 1.5rem; padding: 2rem; backdrop-filter: blur(10px); margin-bottom: 2rem; }
+    .card-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #e2e8f0; display: flex; justify-content: space-between;}
+    
+    .winner-banner { background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(59, 130, 246, 0.2)); border: 1px solid rgba(168, 85, 247, 0.4); padding: 1.5rem; border-radius: 1rem; display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem; }
+    .winner-icon { font-size: 3rem; }
+    .winner-text h3 { margin: 0 0 0.25rem 0; font-size: 1.5rem; color: #a855f7; }
+    .winner-text p { margin: 0; color: var(--text-main); font-size: 1.1rem; }
+    
+    /* Error Chart (RMSE) */
+    .chart-bars { display: flex; align-items: flex-end; justify-content: space-around; height: 250px; padding: 1rem 0; border-bottom: 1px solid var(--card-border); margin-bottom: 1rem; }
+    .bar-col { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; width: 60px; }
+    .bar-val { font-weight: 700; font-size: 1.1rem; }
+    .bar { width: 100%; border-radius: 4px 4px 0 0; }
+    .b-nwp { height: 85%; background: #f59e0b; }
+    .b-ai { height: 60%; background: #a855f7; }
+    .b-ens { height: 75%; background: #06b6d4; }
+    .b-hybrid { height: 40%; background: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+    .bar-lbl { font-weight: 600; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">RituGrid</div>
+    <nav>
+      <a href="landing.html" class="nav-link">🏠 Home</a>
+      <a href="index.html" class="nav-link">📊 Dashboard</a>
+      <a href="map.html" class="nav-link">🌍 Interactive Map</a>
+      <a href="comparison.html" class="nav-link">🤖 Model Comparison</a>
+      <a href="weights.html" class="nav-link">⚖️ Adaptive Weights</a>
+      <a href="analysis.html" class="nav-link">📈 Forecast Analysis</a>
+      <a href="alerts.html" class="nav-link">🚨 Alerts</a>
+      <a href="regional.html" class="nav-link">📍 Regional Forecast</a>
+      <a href="skill.html" class="nav-link active">🧠 Model Skill</a>
+      <a href="report.html" class="nav-link">📋 Forecast Report</a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <div class="header">
+      <h1>🧠 Model Skill & Reliability</h1>
+      <p>Analyze historical accuracy (RMSE / ACC) of each model under varied atmospheric conditions.</p>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group"><select><option>Region: All India</option><option>Himalayas</option></select></div>
+      <div class="filter-group"><select><option>Season: Monsoon</option><option>Winter</option></select></div>
+      <div class="filter-group"><select><option>Lead time: +48h</option><option>+72h</option></select></div>
+      <div class="filter-group"><select><option>Weather: Heavy Rain</option><option>Clear Sky</option></select></div>
+    </div>
+
+    <div class="winner-banner">
+      <div class="winner-icon">🏆</div>
+      <div class="winner-text">
+        <h3>Historically Best Model: AI (GraphCast) + Hybrid</h3>
+        <p>Under <strong>Monsoon</strong> conditions at <strong>+48h</strong> for <strong>Heavy Rain</strong>, the AI model historically outperformed standalone NWP by 32%. The Hybrid Consensus reduces remaining error by an additional 14%.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>RMSE Error (Lower is better)</span>
+        <span style="font-size:0.9rem; color:var(--text-muted);">Metric: Rainfall mm/day</span>
+      </div>
+      <div class="chart-bars">
+        <div class="bar-col">
+          <div class="bar-val" style="color:#f59e0b">4.2</div>
+          <div class="bar b-nwp"></div>
+          <div class="bar-lbl">NWP</div>
+        </div>
+        <div class="bar-col">
+          <div class="bar-val" style="color:#06b6d4">3.6</div>
+          <div class="bar b-ens"></div>
+          <div class="bar-lbl">ENS</div>
+        </div>
+        <div class="bar-col">
+          <div class="bar-val" style="color:#a855f7">2.9</div>
+          <div class="bar b-ai"></div>
+          <div class="bar-lbl">AI</div>
+        </div>
+        <div class="bar-col">
+          <div class="bar-val" style="color:#10b981">2.1</div>
+          <div class="bar b-hybrid"></div>
+          <div class="bar-lbl">Hybrid</div>
+        </div>
+      </div>
+      <p style="text-align:center; color:var(--text-muted); font-size:0.95rem; margin-top:1rem;">Hybrid Consensus consistently achieves the lowest Root Mean Square Error.</p>
+    </div>
+  </main>
+</body>
+</html>
