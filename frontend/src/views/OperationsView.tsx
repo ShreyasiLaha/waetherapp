@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { WeatherVariable, ForecastGrid, WeightsData, IMDAlert } from '../types';
 import { fetchForecast, fetchWeights, simulateDropout } from '../services/api';
-import { interpolateColor, MODEL_COLORS } from '../utils/colormaps';
+import { interpolateColor, MODEL_COLORS, MODEL_NAMES } from '../utils/colormaps';
 import L from 'leaflet';
 import { 
   Zap, 
@@ -349,7 +349,11 @@ export const OperationsView: React.FC<OperationsViewProps> = ({
           minWidth: '220px',
         }}>
           <div style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.5rem' }}>
-            {viewMode === 'forecast' ? `${forecast?.variable.toUpperCase() || 'PRECIPITATION'} (${forecast?.units || 'mm/day'})` : 'DOMINANT MODEL'}
+            {viewMode === 'forecast' 
+              ? activeVar === 'tp' ? 'TOTAL PRECIPITATION (MM/DAY)' 
+              : activeVar === 't2m' ? 'TEMPERATURE (°C / KELVIN)' 
+              : '10M WIND SPEED (M/S)'
+              : 'DOMINANT MODEL'}
           </div>
 
           {viewMode === 'forecast' ? (
@@ -357,14 +361,38 @@ export const OperationsView: React.FC<OperationsViewProps> = ({
               <div style={{
                 height: '10px',
                 borderRadius: '5px',
-                background: 'linear-gradient(to right, #0f172a, #38bdf8, #2563eb, #f59e0b, #ef4444, #a855f7)',
+                background: activeVar === 'tp'
+                  ? 'linear-gradient(to right, #0f172a, #38bdf8, #2563eb, #f59e0b, #ef4444, #a855f7)'
+                  : activeVar === 't2m'
+                  ? 'linear-gradient(to right, #3b82f6, #2dd4bf, #22c55e, #facc15, #f97316, #ef4444, #9f1239)'
+                  : 'linear-gradient(to right, #0f172a, #38bdf8, #22c55e, #eab308, #ef4444, #a855f7)',
                 marginBottom: '0.4rem',
               }} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'JetBrains Mono' }}>
-                <span>0</span>
-                <span>15</span>
-                <span>64.5 (IMD Heavy)</span>
-                <span>150+</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'JetBrains Mono' }}>
+                {activeVar === 'tp' && (
+                  <>
+                    <span>0 mm</span>
+                    <span>15 mm</span>
+                    <span style={{ color: '#f59e0b' }}>64.5 (IMD Heavy)</span>
+                    <span style={{ color: '#ef4444' }}>150+ mm</span>
+                  </>
+                )}
+                {activeVar === 't2m' && (
+                  <>
+                    <span style={{ color: '#60a5fa' }}>5°C (278K)</span>
+                    <span>20°C</span>
+                    <span>30°C</span>
+                    <span style={{ color: '#ef4444' }}>41°C+ (Heatwave)</span>
+                  </>
+                )}
+                {activeVar === 'ws10' && (
+                  <>
+                    <span>0 m/s</span>
+                    <span>8 m/s</span>
+                    <span style={{ color: '#f59e0b' }}>14 (50 km/h)</span>
+                    <span style={{ color: '#ef4444' }}>28+ m/s</span>
+                  </>
+                )}
               </div>
             </div>
           ) : (
@@ -416,8 +444,22 @@ export const OperationsView: React.FC<OperationsViewProps> = ({
               <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textTransform: 'uppercase' }}>
                 Blended Forecast Value
               </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-sky)' }}>
-                {inspectPoint.value} <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{forecast?.units}</span>
+              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--accent-sky)' }}>
+                {activeVar === 't2m' ? (
+                  <>
+                    {(inspectPoint.value > 150 ? inspectPoint.value - 273.15 : inspectPoint.value).toFixed(1)}°C{' '}
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>({inspectPoint.value.toFixed(1)} K)</span>
+                  </>
+                ) : activeVar === 'ws10' ? (
+                  <>
+                    {inspectPoint.value.toFixed(1)} m/s{' '}
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>({(inspectPoint.value * 3.6).toFixed(1)} km/h)</span>
+                  </>
+                ) : (
+                  <>
+                    {inspectPoint.value.toFixed(1)} <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>mm/day</span>
+                  </>
+                )}
               </div>
             </div>
 
@@ -472,8 +514,9 @@ export const OperationsView: React.FC<OperationsViewProps> = ({
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-              {['gfs', 'ncum', 'graphcast'].map(model => {
+              {(weights?.models?.length ? weights.models : ['model_nwp1', 'model_nwp2', 'model_ai1']).map(model => {
                 const isDisabled = disabledModels.includes(model);
+                const displayName = MODEL_NAMES[model] || model.toUpperCase();
                 return (
                   <div
                     key={model}
@@ -489,10 +532,10 @@ export const OperationsView: React.FC<OperationsViewProps> = ({
                   >
                     <div>
                       <div style={{ fontWeight: 700, color: isDisabled ? '#fca5a5' : 'var(--text-main)' }}>
-                        {model.toUpperCase()} {model === 'graphcast' ? '(DeepMind AI)' : '(Physics NWP)'}
+                        {displayName}
                       </div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
-                        {isDisabled ? 'FEED OFFLINE (0% weight)' : 'OPERATIONAL (Ingesting)'}
+                        {isDisabled ? 'FEED OFFLINE (0% weight redistributed)' : 'OPERATIONAL (Live Ingesting)'}
                       </div>
                     </div>
 

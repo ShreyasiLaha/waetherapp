@@ -50,6 +50,35 @@ export async function fetchAlerts(date: string, leadTime?: number): Promise<IMDA
   }
 }
 
+export interface DynamicSkillRecord {
+  date: string;
+  variable: string;
+  lead_time_hours: number;
+  scores: {
+    blended: { rmse: number; acc: number };
+    model_nwp1: { rmse: number; acc: number };
+    model_nwp2: { rmse: number; acc: number };
+    model_ai1: { rmse: number; acc: number };
+  };
+}
+
+export async function fetchSkillScores(date?: string, leadTime?: number, variable?: WeatherVariable): Promise<DynamicSkillRecord[]> {
+  try {
+    const params = new URLSearchParams();
+    if (date) params.append('date', date.replace(/-/g, ''));
+    if (leadTime != null) params.append('lead_time', String(leadTime));
+    if (variable) params.append('variable', variable);
+
+    const query = params.toString() ? `?${params.toString()}` : '';
+    const res = await fetch(`${API_BASE}/skill-scores${query}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.records || [];
+  } catch {
+    return [];
+  }
+}
+
 export async function simulateDropout(
   date: string,
   leadTime: number,

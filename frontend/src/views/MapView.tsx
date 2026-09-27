@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import type { WeatherVariable } from '../types';
+import type { WeatherVariable, ForecastGrid } from '../types';
+import { fetchForecast } from '../services/api';
+import { interpolateColor } from '../utils/colormaps';
 import L from 'leaflet';
-import { Layers, MapPin, ZoomIn } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 
 interface MapViewProps {
   activeDate: string;
@@ -16,8 +18,10 @@ export const MapView: React.FC<MapViewProps> = ({
 }) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
+  const canvasLayerRef = useRef<L.ImageOverlay | null>(null);
   const [selectedRegion, setSelectedRegion] = useState('india');
   const [activeModel, setActiveModel] = useState<'blended' | 'gfs' | 'ncum' | 'graphcast'>('blended');
+  const [forecast, setForecast] = useState<ForecastGrid | null>(null);
 
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
@@ -47,6 +51,64 @@ export const MapView: React.FC<MapViewProps> = ({
       mapInstance.current = null;
     };
   }, []);
+
+  // Fetch forecast data
+  useEffect(() => {
+    fetchForecast(activeDate, activeLeadTime, activeVar)
+      .then(setForecast)
+      .catch(() => null);
+  }, [activeDate, activeLeadTime, activeVar]);
+
+  // Render Canvas Raster
+  useEffect(() => {
+    const map = mapInstance.current;
+    if (!map || !forecast) return;
+
+    if (canvasLayerRef.current) {
+      map.removeLayer(canvasLayerRef.current);
+      canvasLayerRef.current = null;
+    }
+
+    const { lat, lon, values } = forecast.grid;
+    if (!lat?.length || !lon?.length || !values?.length) return;
+
+    const south = Math.min(...lat);
+    const north = Math.max(...lat);
+    const west = Math.min(...lon);
+    const east = Math.max(...lon);
+    const bounds = L.latLngBounds([south, west], [north, east]);
+
+    const rows = lat.length;
+    const cols = lon.length;
+    const canvas = document.createElement('canvas');
+    canvas.width = cols;
+    canvas.height = rows;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const imgData = ctx.createImageData(cols, rows);
+
+    for (let r = 0; r < rows; r++) {
+      const latIdx = lat[0] > lat[rows - 1] ? r : rows - 1 - r;
+      for (let c = 0; c < cols; c++) {
+        const val = values[latIdx]?.[c] ?? 0;
+        const rgba = interpolateColor(activeVar, val);
+        const idx = (r * cols + c) * 4;
+        imgData.data[idx] = rgba[0];
+        imgData.data[idx + 1] = rgba[1];
+        imgData.data[idx + 2] = rgba[2];
+        imgData.data[idx + 3] = Math.round(rgba[3] * 255);
+      }
+    }
+
+    ctx.putImageData(imgData, 0, 0);
+
+    const imageOverlay = L.imageOverlay(canvas.toDataURL(), bounds, {
+      opacity: 0.82,
+    });
+    imageOverlay.addTo(map);
+    canvasLayerRef.current = imageOverlay;
+  }, [forecast, activeVar]);
 
   const handleRegionChange = (reg: string) => {
     setSelectedRegion(reg);
@@ -124,6 +186,60 @@ export const MapView: React.FC<MapViewProps> = ({
             {m.label}
           </button>
         ))}
+      </div>
+
+      {/* Legend Panel in bottom left */}
+      <div className="glass-panel" style={{
+        position: 'absolute',
+        bottom: '1.5rem',
+        left: '1.5rem',
+        padding: '1rem 1.25rem',
+        zIndex: 900,
+        minWidth: '220px',
+      }}>
+        <div style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.5rem' }}>
+          {activeVar === 'tp' ? 'TOTAL PRECIPITATION (MM/DAY)' 
+            : activeVar === 't2m' ? 'TEMPERATURE (°C / KELVIN)' 
+            : '10M WIND SPEED (M/S)'}
+        </div>
+        <div>
+          <div style={{
+            height: '10px',
+            borderRadius: '5px',
+            background: activeVar === 'tp'
+              ? 'linear-gradient(to right, #0f172a, #38bdf8, #2563eb, #f59e0b, #ef4444, #a855f7)'
+              : activeVar === 't2m'
+              ? 'linear-gradient(to right, #3b82f6, #2dd4bf, #22c55e, #facc15, #f97316, #ef4444, #9f1239)'
+              : 'linear-gradient(to right, #0f172a, #38bdf8, #22c55e, #eab308, #ef4444, #a855f7)',
+            marginBottom: '0.4rem',
+          }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'JetBrains Mono' }}>
+            {activeVar === 'tp' && (
+              <>
+                <span>0 mm</span>
+                <span>15 mm</span>
+                <span style={{ color: '#f59e0b' }}>64.5 (IMD Heavy)</span>
+                <span style={{ color: '#ef4444' }}>150+ mm</span>
+              </>
+            )}
+            {activeVar === 't2m' && (
+              <>
+                <span style={{ color: '#60a5fa' }}>5°C (278K)</span>
+                <span>20°C</span>
+                <span>30°C</span>
+                <span style={{ color: '#ef4444' }}>41°C+ (Heatwave)</span>
+              </>
+            )}
+            {activeVar === 'ws10' && (
+              <>
+                <span>0 m/s</span>
+                <span>8 m/s</span>
+                <span style={{ color: '#f59e0b' }}>14 (50 km/h)</span>
+                <span style={{ color: '#ef4444' }}>28+ m/s</span>
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
