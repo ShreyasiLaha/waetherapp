@@ -12,7 +12,7 @@
       --bg-dark: #0f172a; --card-bg: rgba(30, 41, 59, 0.7); --card-border: rgba(255, 255, 255, 0.1);
       --text-main: #f8fafc; --text-muted: #94a3b8; --primary: #3b82f6; --accent: #38bdf8;
     }
-    body { margin: 0; font-family: 'Outfit', sans-serif; background: radial-gradient(circle at top left, #1e1b4b 0%, #0f172a 100%); color: var(--text-main); min-height: 100vh; display: flex; }
+    body { margin: 0; font-family: 'Outfit', sans-serif; background: url('bg.jpg') center/cover no-repeat fixed; color: var(--text-main); min-height: 100vh; display: flex; }
     .sidebar { width: 250px; background: rgba(15, 23, 42, 0.8); border-right: 1px solid var(--card-border); backdrop-filter: blur(20px); padding: 2rem; display: flex; flex-direction: column; }
     .brand { font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 3rem; }
     .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 500; padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 0.5rem; transition: all 0.2s; display: flex; align-items: center; gap: 0.75rem; }
@@ -43,9 +43,43 @@
     .b-ens { height: 75%; background: #06b6d4; }
     .b-hybrid { height: 40%; background: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
     .bar-lbl { font-weight: 600; color: var(--text-muted); }
-  </style>
+  
+    
+      to { --angle: 360deg; }
+    }
+
+  
+    /* Universal Card Hover Effects */
+    .summary-card, .model-card, .alert-card, .card, .viz-container {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .summary-card::after, .model-card::after, .alert-card::after, .card::after, .viz-container::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 50%; height: 100%;
+      background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.7s ease;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .summary-card:hover, .model-card:hover, .alert-card:hover, .card:hover, .viz-container:hover {
+      transform: translateY(-6px) !important;
+      border-color: #38bdf8 !important;
+      box-shadow: 0 10px 25px rgba(56, 189, 248, 0.2) !important;
+    }
+    .summary-card:hover::after, .model-card:hover::after, .alert-card:hover::after, .card:hover::after, .viz-container:hover::after {
+      left: 200%;
+    }
+</style>
 </head>
 <body>
+<video id="bg-video" autoplay loop muted playsinline style="position: fixed; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -3; transform: translateX(-50%) translateY(-50%); object-fit: cover; opacity: 0.3;"></video>
+
   <aside class="sidebar">
     <div class="brand">RituGrid</div>
     <nav>
@@ -113,5 +147,6 @@
       <p style="text-align:center; color:var(--text-muted); font-size:0.95rem; margin-top:1rem;">Hybrid Consensus consistently achieves the lowest Root Mean Square Error.</p>
     </div>
   </main>
+<script src="weather-bg.js"></script>
 </body>
 </html>

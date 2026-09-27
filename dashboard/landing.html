@@ -21,7 +21,7 @@
       padding: 0;
       min-height: 100%;
       font-family: 'Outfit', sans-serif;
-      background-color: var(--bg-dark);
+      background: url('bg.jpg') center/cover no-repeat fixed;
       color: var(--text-main);
       overflow-x: hidden;
     }
@@ -32,7 +32,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0f172a 100%);
+      background: url('bg.jpg') center/cover no-repeat fixed;
       z-index: -2;
     }
 
@@ -261,18 +261,36 @@
 
     .feature-card {
       background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 1rem;
       padding: 2rem;
       text-align: left;
       backdrop-filter: blur(10px);
-      transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .feature-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 50%; height: 100%;
+      background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.7s ease;
     }
 
     .feature-card:hover {
-      transform: translateY(-5px);
-      background: rgba(255, 255, 255, 0.05);
-      border-color: rgba(56, 189, 248, 0.3);
+      transform: translateY(-8px);
+      border-color: #38bdf8;
+      box-shadow: 0 15px 30px rgba(56, 189, 248, 0.2);
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    .feature-card:hover::after {
+      left: 200%;
     }
 
     .feature-icon {
@@ -302,9 +320,14 @@
       .diagram-arrow { transform: rotate(90deg); }
       .button-group { flex-direction: column; }
     }
+  
+
+
   </style>
 </head>
 <body>
+<video id="bg-video" autoplay loop muted playsinline style="position: fixed; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -3; transform: translateX(-50%) translateY(-50%); object-fit: cover; opacity: 0.3;"></video>
+
 
   <div class="hero-bg"></div>
   <div class="glow-orb"></div>
@@ -388,5 +411,6 @@
     </main>
   </div>
 
+<script src="weather-bg.js"></script>
 </body>
 </html>
