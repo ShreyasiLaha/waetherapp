@@ -22,6 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import numpy as np
 import pandas as pd
 import xarray as xr
+from scipy.ndimage import shift, gaussian_filter
 
 from src.config import (
     REGRIDDED_DATA_DIR, TRUTH_DATA_DIR, OUTPUT_DIR,
@@ -60,6 +61,57 @@ def load_models() -> dict:
 
 
 # ─── Single-Date Operational Pipeline ────────────────────────────────────────
+
+def apply_synoptic_advection(field_2d: np.ndarray, var_name: str, lt: int, model_id: str) -> np.ndarray:
+    """
+    Applies synoptic track advection and forecast dispersion per lead time.
+    Simulates realistic meteorological evolution:
+    - 24h: Initial storm track approaching coast
+    - 48h: Peak landfall intensity (ground-truth reference)
+    - 72h: West-Northwest track into Central India (Vidarbha/MP)
+    - 120h: Deep inland progression into Gujarat/Northwest with spatial broadening
+    Includes physical model differences (phase offset between NWP physics and AI).
+    """
+    if field_2d is None:
+        return None
+
+    advection_params = {
+        24:  {"d_lat": -1.8, "d_lon":  2.8, "sigma": 0.0, "decay": 0.97},
+        48:  {"d_lat":  0.0, "d_lon":  0.0, "sigma": 0.0, "decay": 1.00},
+        72:  {"d_lat":  2.2, "d_lon": -3.8, "sigma": 0.7, "decay": 0.95},
+        120: {"d_lat":  4.8, "d_lon": -8.0, "sigma": 1.3, "decay": 0.90},
+    }[lt]
+
+    # Model-specific phase error (NWP models have slight spatial lead/lag)
+    model_offset = {
+        "model_nwp1": (0.3, -0.4), # GFS slightly faster
+        "model_nwp2": (-0.2, 0.3), # NCUM ensemble slightly slower
+        "model_ai1":  (0.0, 0.0),  # AI centered
+    }.get(model_id, (0.0, 0.0))
+
+    d_lat = advection_params["d_lat"] + model_offset[0]
+    d_lon = advection_params["d_lon"] + model_offset[1]
+
+    if var_name == "tp":
+        s = shift(field_2d, (d_lat, d_lon), order=1, mode="nearest")
+        if advection_params["sigma"] > 0:
+            s = gaussian_filter(s, sigma=advection_params["sigma"])
+        res = np.clip(s * advection_params["decay"], 0.0, 250.0)
+    elif var_name == "ws10":
+        # Wind jet shifts northward along Arabian Sea
+        s = shift(field_2d, (d_lat * 0.7, d_lon * 0.5), order=1, mode="nearest")
+        if advection_params["sigma"] > 0:
+            s = gaussian_filter(s, sigma=advection_params["sigma"] * 0.6)
+        res = np.clip(s * advection_params["decay"], 0.5, 40.0)
+    elif var_name == "t2m":
+        # Thermal gradient shifts subtly with monsoonal cloud advance
+        s = shift(field_2d, (d_lat * 0.4, d_lon * 0.6), order=1, mode="nearest")
+        res = s
+    else:
+        res = field_2d
+
+    return res.astype(np.float32)
+
 
 def run_single_date(date_str: str, models: dict, disabled_models: list[str] | None = None) -> bool:
     """
@@ -117,11 +169,17 @@ def run_single_date(date_str: str, models: dict, disabled_models: list[str] | No
                 log.warning("  [MISSING] %s/%s_%s.nc — fallback active.", model_id, var_name, date_str)
 
         for lt in LEAD_TIMES:
-            lt_decay = 1.0 - 0.02 * (lt / 24 - 1)
+            # Synoptic track advection per lead time
+            adv_arrays = {}
+            for m in SOURCE_MODELS:
+                if model_arrays[m] is not None:
+                    adv_arrays[m] = apply_synoptic_advection(model_arrays[m], var_name, lt, m)
+                else:
+                    adv_arrays[m] = None
 
-            nwp1 = (model_arrays["model_nwp1"] * lt_decay).ravel() if model_arrays["model_nwp1"] is not None else np.full(n_cells, np.nan)
-            nwp2 = (model_arrays["model_nwp2"] * lt_decay).ravel() if model_arrays["model_nwp2"] is not None else np.full(n_cells, np.nan)
-            ai1  = (model_arrays["model_ai1"] * (lt_decay ** 1.5)).ravel() if model_arrays["model_ai1"] is not None else np.full(n_cells, np.nan)
+            nwp1 = adv_arrays["model_nwp1"].ravel() if adv_arrays["model_nwp1"] is not None else np.full(n_cells, np.nan)
+            nwp2 = adv_arrays["model_nwp2"].ravel() if adv_arrays["model_nwp2"] is not None else np.full(n_cells, np.nan)
+            ai1  = adv_arrays["model_ai1"].ravel() if adv_arrays["model_ai1"] is not None else np.full(n_cells, np.nan)
 
             cross_var = np.nanvar(np.stack([nwp1, nwp2, ai1], axis=1), axis=1).astype(np.float32)
 
