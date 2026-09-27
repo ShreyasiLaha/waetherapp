@@ -308,10 +308,14 @@ def simulate_dropout(req: DropoutRequest):
     # Zero-out disabled models and renormalise
     for m in req.disabled_models:
         weight_arrs[m] = np.zeros_like(weight_arrs[m])
+    
     total = sum(weight_arrs[m] for m in active)
-    total = np.where(total < 1e-9, 1.0, total)  # avoid div-by-zero
+    zero_mask = total < 1e-9
+    safe_total = np.where(zero_mask, 1.0, total)
     for m in active:
-        weight_arrs[m] = weight_arrs[m] / total
+        norm_w = weight_arrs[m] / safe_total
+        weight_arrs[m] = np.where(zero_mask, 1.0 / len(active), norm_w)
+
 
     # Dominant model after redistribution
     stacked = np.stack([weight_arrs[m] for m in SOURCE_MODELS], axis=0)
