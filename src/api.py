@@ -354,3 +354,9 @@ def health():
         "available_dates": len(dates),
         "models_loaded": models_ready,
     }
+
+
+# ─── Mount Frontend Dashboard (Fullstack Unified Deployment) ───────────────────
+frontend_dist = PROJECT_ROOT / "frontend" / "dist"
+if frontend_dist.exists():
+    app.mount("/", StaticFiles(directory=str(frontend_dist), html=True), name="frontend")
