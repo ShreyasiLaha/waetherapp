@@ -69,7 +69,7 @@ def run_checks():
         PROJECT_ROOT / "models",
         PROJECT_ROOT / "scripts",
         PROJECT_ROOT / "src",
-        PROJECT_ROOT / "dashboard",
+        PROJECT_ROOT / "frontend",
     ]
 
     missing_dirs = []

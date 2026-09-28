@@ -23,7 +23,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # Copy application codebase
 COPY src/ ./src/
-COPY dashboard/ ./dashboard/
+COPY frontend/dist/ ./frontend/dist/
 COPY models/ ./models/
 COPY scripts/ ./scripts/
 COPY data/output/ ./data/output/

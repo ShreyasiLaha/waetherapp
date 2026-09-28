@@ -62,21 +62,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount modern React TypeScript SPA & legacy static dashboard UI
+# Mount modern React TypeScript Single Page Application (SPA)
 FRONTEND_DIST = PROJECT_ROOT / "frontend" / "dist"
-DASHBOARD_DIR = PROJECT_ROOT / "dashboard"
 
 if FRONTEND_DIST.exists():
     app.mount("/app", StaticFiles(directory=str(FRONTEND_DIST), html=True), name="app")
 
-if DASHBOARD_DIR.exists():
-    app.mount("/dashboard", StaticFiles(directory=str(DASHBOARD_DIR), html=True), name="dashboard")
-
 @app.get("/", include_in_schema=False)
 def root():
-    if FRONTEND_DIST.exists():
-        return RedirectResponse(url="/app/")
-    return RedirectResponse(url="/dashboard/landing.html")
+    return RedirectResponse(url="/app/")
 
 
 
