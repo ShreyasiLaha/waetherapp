@@ -1,4 +1,17 @@
 # RituGrid — Production Deployment Dockerfile
+# Multi-stage build: Builds Vite/React frontend and Python FastAPI backend into a single image
+
+# ─── Stage 1: Build Frontend Dashboard ────────────────────────────────────────
+FROM node:20-slim AS frontend-builder
+WORKDIR /app/frontend
+
+COPY frontend/package*.json ./
+RUN npm ci
+
+COPY frontend/ ./
+RUN npm run build
+
+# ─── Stage 2: Python Backend & Unified Serving Layer ─────────────────────────
 FROM python:3.11-slim
 
 # Set environment variables
@@ -23,7 +36,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # Copy application codebase
 COPY src/ ./src/
-COPY frontend/dist/ ./frontend/dist/
+COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 COPY models/ ./models/
 COPY scripts/ ./scripts/
 COPY data/output/ ./data/output/
@@ -34,7 +47,7 @@ COPY *.md ./
 EXPOSE 8000
 
 # Healthcheck
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl -f http://localhost:8000/health || exit 1
 
 # Start FastAPI serving layer
